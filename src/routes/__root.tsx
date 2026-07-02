@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Cifras App — Violão" },
-      { name: "description", content: "Cifras, acordes, repertórios, afinador e metrônomo para violão." },
+      { title: "Pcifras-music — Cifras & Repertórios" },
+      { name: "description", content: "Pcifras-music: cifras, acordes, repertórios, afinador e metrônomo para violão." },
       { name: "theme-color", content: "#7c6df0" },
-      { property: "og:title", content: "Cifras App — Violão" },
+      { property: "og:title", content: "Pcifras-music — Cifras & Repertórios" },
       { property: "og:description", content: "Cifras, acordes e repertórios para violão." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
