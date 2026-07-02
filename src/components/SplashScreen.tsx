@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import logoAsset from "../assets/pcifras-logo.jpg.asset.json";
+
 
 export default function SplashScreen({ onDone }: { onDone: () => void }) {
   const [leaving, setLeaving] = useState(false);
@@ -52,7 +54,7 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
         </div>
 
         <img
-          src="/icons/icon-512.png"
+          src={logoAsset.url}
           alt="PCifrasMusic"
           width={180}
           height={180}
