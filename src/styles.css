@@ -3753,3 +3753,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 @media print {
   .dual-players-container { display: none !important; }
 }
+
+#lovable-badge {
+  display: none !important;
+}
