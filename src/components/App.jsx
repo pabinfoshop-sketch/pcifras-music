@@ -138,7 +138,7 @@ export default function App() {
       showToast(mode === 'login' ? `Bem-vindo, ${data.user.name}!${trialInfo}` : `Conta criada! ${data.user.trialDays} dias grátis ativados 🎉`)
       return true
     } catch (e) {
-      showToast('Erro de conexão')
+      showToast('Sem conexão. Tente novamente em instantes.')
       return false
     }
   }, [API_URL, setAuthToken, setAuthUser, setIsPremium, showToast])
@@ -173,7 +173,7 @@ export default function App() {
         showToast(data.error || 'Erro ao iniciar pagamento')
       }
     } catch (e) {
-      showToast('Erro de conexão com pagamento')
+      showToast('Sem conexão com o pagamento. Tente novamente.')
     }
   }, [API_URL, authToken, showToast])
 
@@ -196,7 +196,7 @@ export default function App() {
         showToast(data.error || 'Erro ao gerar PIX')
       }
     } catch (e) {
-      showToast('Erro de conexão ao gerar PIX')
+      showToast('Não foi possível gerar o PIX agora. Tente novamente.')
     } finally {
       setPixLoading(false)
     }
@@ -220,7 +220,7 @@ export default function App() {
         showToast(data.error || 'Erro ao cancelar')
       }
     } catch (e) {
-      showToast('Erro de conexão ao cancelar')
+      showToast('Sem conexão para cancelar. Tente novamente.')
     }
   }, [API_URL, authToken, setAuthUser, setIsPremium, showToast])
 
@@ -270,7 +270,7 @@ export default function App() {
     setTranspose(0)
     setBpm(song.bpm || 80)
     setScreen('view')
-    setTimeout(() => showToast('Música adicionada!'), 100)
+    setTimeout(() => showToast('Música salva no seu repertório'), 100)
   }, [showToast])
 
   const handleDelete = useCallback(song => {
@@ -290,7 +290,7 @@ export default function App() {
       if (remaining.length === 0) setScreen('songs')
     }
     setConfirmDelete(null)
-    showToast('Música removida')
+    showToast('Música removida do seu repertório')
   }, [confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
@@ -302,7 +302,7 @@ export default function App() {
 
   const toggleMetro = useCallback(() => {
     if (isPlaying) { stopMetro(); return }
-    if (!currentSong) { showToast('Selecione uma música primeiro'); return }
+    if (!currentSong) { showToast('Escolha uma música para começar'); return }
     setIsPlaying(true)
     if (!ctxRef.current) ctxRef.current = new (window.AudioContext || window.webkitAudioContext)()
     const rhythm = currentSong.rhythm || 'Hino 4/4'
@@ -471,7 +471,7 @@ export default function App() {
     setSetlists(prev => [...prev, { id: Date.now(), name, songIds: [] }])
     setShowCreateSetlist(false)
     setCreateSetlistName('')
-    showToast(`Repertório "${name}" criado!`)
+    showToast(`Repertório "${name}" criado`)
   }, [createSetlistName, setSetlists, showToast])
 
   const createSetlist = startCreateSetlist
@@ -541,7 +541,7 @@ export default function App() {
     ))
     setRenamingSetlist(null)
     setRenameValue('')
-    showToast('Repertório renomeado')
+    showToast('Nome do repertório atualizado')
   }, [renamingSetlist, renameValue, setSetlists, showToast])
 
   const setlistSongs = activeSetlist
@@ -560,7 +560,7 @@ export default function App() {
     a.href = url; a.download = `songpcmusic-backup-${new Date().toISOString().slice(0,10)}.json`
     document.body.appendChild(a); a.click()
     document.body.removeChild(a); URL.revokeObjectURL(url)
-    showToast('Backup baixado!')
+    showToast('Backup salvo no seu dispositivo')
   }, [songs, setlists, showToast])
 
   const handleImportBackup = useCallback(() => {
@@ -575,8 +575,8 @@ export default function App() {
           const data = JSON.parse(ev.target.result)
           if (data.songs) setSongs(data.songs)
           if (data.setlists) setSetlists(data.setlists)
-          showToast(`Importado: ${data.songs?.length || 0} músicas`)
-        } catch { showToast('Arquivo inválido') }
+          showToast(`${data.songs?.length || 0} músicas importadas com sucesso`)
+        } catch { showToast('Arquivo inválido ou corrompido') }
       }
       reader.readAsText(file)
     }
@@ -584,31 +584,31 @@ export default function App() {
   }, [setSongs, setSetlists, showToast])
 
   const handleCloudSync = useCallback(async () => {
-    if (!authToken) { showToast('Faça login primeiro'); return }
-    if (!isPremium) { showToast('Disponível para assinantes Premium'); return }
+    if (!authToken) { showToast('Entre na sua conta para continuar'); return }
+    if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
     try {
       const res = await fetch(`${API_URL}/sync/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
         body: JSON.stringify({ songs, setlists }),
       })
-      if (res.ok) showToast('☁️ Dados salvos na nuvem!')
+      if (res.ok) showToast('Tudo salvo na nuvem com segurança')
       else { const d = await res.json(); showToast(d.error || 'Erro ao sincronizar') }
-    } catch { showToast('Erro de conexão') }
+    } catch { showToast('Sem conexão. Tente novamente em instantes.') }
   }, [API_URL, authToken, isPremium, songs, setlists, showToast])
 
   const handleCloudRestore = useCallback(async () => {
-    if (!authToken) { showToast('Faça login primeiro'); return }
-    if (!isPremium) { showToast('Disponível para assinantes Premium'); return }
+    if (!authToken) { showToast('Entre na sua conta para continuar'); return }
+    if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
     try {
       const res = await fetch(`${API_URL}/sync/load`, { headers: { Authorization: `Bearer ${authToken}` } })
       if (res.ok) {
         const data = await res.json()
         if (data.songs?.length) setSongs(data.songs)
         if (data.setlists?.length) setSetlists(data.setlists)
-        showToast(`☁️ Restaurado: ${data.songs?.length || 0} músicas`)
+        showToast(`${data.songs?.length || 0} músicas restauradas da nuvem`)
       } else { const d = await res.json(); showToast(d.error || 'Erro ao restaurar') }
-    } catch { showToast('Erro de conexão') }
+    } catch { showToast('Sem conexão. Tente novamente em instantes.') }
   }, [API_URL, authToken, isPremium, setSongs, setSetlists, showToast])
 
   const handleShare = useCallback(() => {
@@ -618,13 +618,13 @@ export default function App() {
         line.map(g => g.chord ? `[${g.chord}]${g.word}` : g.word).join('')
       ).join('\n')
     ).join('\n\n') || ''
-    if (!text.trim()) { showToast('Nada para compartilhar'); return }
+    if (!text.trim()) { showToast('Abra uma cifra antes de compartilhar'); return }
     if (navigator.share) {
       navigator.share({ title: currentSong.title, text }).catch(() => {})
     } else {
       navigator.clipboard.writeText(`${currentSong.title} - ${currentSong.artist}\n\n${text}`).then(() => {
-        showToast('Cifra copiada!')
-      }).catch(() => showToast('Erro ao copiar'))
+        showToast('Cifra copiada para a área de transferência')
+      }).catch(() => showToast('Não foi possível copiar a cifra'))
     }
   }, [currentSong, showToast])
 
@@ -691,7 +691,7 @@ export default function App() {
               <button className="sidebar-add-btn" onClick={() => setShowModal(true)}>＋ Adicionar Música</button>
               <div className="sidebar-songs">
                 {filtered.length === 0 ? (
-                  <div className="empty-list">Nenhuma música encontrada.</div>
+                  <div className="empty-list">Nenhuma música encontrada.<br />Tente outro nome ou limpe o filtro.</div>
                 ) : (
                   filtered.map(s => (
                     <div key={s.id} className={`song-card${currentSong?.id === s.id ? ' active' : ''}`}>
@@ -907,7 +907,7 @@ export default function App() {
             </div>
             <div id="content">
               {setlistSongs.length === 0 ? (
-                <div className="empty-list">Repertório vazio.<br />Adicione músicas pelo botão 📋 ao lado de cada música.</div>
+                <div className="empty-list">Este repertório ainda está vazio.<br />Adicione músicas pelo ícone 📋 ao lado de cada uma.</div>
               ) : (
                 <div className="song-list">
                   {setlistSongs.map((s, i) => (
@@ -975,7 +975,7 @@ export default function App() {
                   )}
                   <div className="song-list">
                     {filtered.length === 0 ? (
-                      <div className="empty-list">Nenhuma música encontrada.</div>
+                      <div className="empty-list">Nenhuma música encontrada.<br />Tente outro nome ou limpe o filtro.</div>
                     ) : (
                       filtered.map(s => (
                         <div key={s.id} className={`song-card${currentSong?.id === s.id ? ' active' : ''}`}>
@@ -994,7 +994,7 @@ export default function App() {
               )}
             </div>
             <div className="keyboard-hint">
-              {songs.length > 0 ? 'Toque em uma música para ver a cifra' : 'Adicione músicas com o botão ＋'}
+              {songs.length > 0 ? 'Toque em uma música para abrir a cifra' : 'Comece adicionando sua primeira música no ＋'}
             </div>
           </>
         )}
@@ -1082,7 +1082,7 @@ export default function App() {
                 "{addToSetlistSong.title}" em qual repertório?
               </p>
               {setlists.length === 0 ? (
-                <p style={{textAlign:'center',color:'var(--text-muted)',padding:20}}>Nenhum repertório ainda.<br />Crie um primeiro.</p>
+                <p style={{textAlign:'center',color:'var(--text-muted)',padding:20}}>Você ainda não tem repertórios.<br />Crie o primeiro para organizar.</p>
               ) : (
                 setlists.map(sl => (
                   <div key={sl.id} className="result-card" onClick={() => addSongToSetlist(addToSetlistSong.id, sl.id)}>
@@ -1436,8 +1436,8 @@ export default function App() {
 
       {confirmDelete && (
         <ConfirmDialog
-          message="Remover música?"
-          subMessage={`"${confirmDelete.title}"`}
+          message="Remover esta música?"
+          subMessage={`"${confirmDelete.title}" será removida do seu repertório. Esta ação não pode ser desfeita.`}
           onConfirm={confirmDeleteSong}
           onCancel={() => setConfirmDelete(null)}
         />
@@ -1453,7 +1453,7 @@ function SetlistList({ setlists, onSelect, onCreate }) {
     <div className="sidebar-songs">
       <button className="sidebar-add-btn" onClick={onCreate}>＋ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Nenhum repertório.<br />Crie um para organizar suas músicas.</div>
+        <div className="empty-list">Nenhum repertório por aqui.<br />Crie um para organizar suas músicas.</div>
       ) : (
         setlists.map(sl => (
           <div key={sl.id} className="song-card" onClick={() => onSelect(sl)}>
@@ -1474,7 +1474,7 @@ function MobileSetlistList({ setlists, onSelect, onCreate }) {
     <div>
       <button className="msearch-btn" style={{width:'100%',marginBottom:12}} onClick={onCreate}>＋ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Nenhum repertório ainda.<br />Crie um para organizar suas músicas.</div>
+        <div className="empty-list">Você ainda não tem repertórios.<br />Crie um para organizar suas músicas.</div>
       ) : (
         <div className="song-list">
           {setlists.map(sl => (

@@ -163,15 +163,16 @@ export default function Modal({ onAdd, onClose }) {
 
               {status === 'notfound' && (
                 <div className="form-note" style={{ marginTop: 14 }}>
-                  Nenhum resultado para "{query}". Tente outras palavras ou adicione manualmente.
+                  Nada encontrado para "{query}". Tente outro título ou artista, ou adicione manualmente.
                 </div>
               )}
 
               {status === 'error' && (
                 <div className="form-note" style={{ marginTop: 14, color: '#ff9a9a' }}>
-                  ⚠ {errorMsg || 'Não foi possível buscar agora. Tente novamente.'}
+                  ⚠ {errorMsg || 'A busca falhou agora. Verifique sua conexão e tente novamente.'}
                 </div>
               )}
+
 
               {status === 'found' && results.length > 0 && (
                 <ul className="search-results" style={{ listStyle: 'none', padding: 0, marginTop: 14, maxHeight: 340, overflowY: 'auto' }}>
