@@ -55,7 +55,7 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
         </div>
 
         <img
-          src={logoAsset.url}
+          src={LOGO_URL}
           alt="PCifrasMusic"
           width={180}
           height={180}
