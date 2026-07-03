@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import logoAsset from "../assets/pcifras-logo.jpg.asset.json";
+
+const LOGO_URL = "/icons/icon-192.png";
 
 
 export default function SplashScreen({ onDone }: { onDone: () => void }) {
