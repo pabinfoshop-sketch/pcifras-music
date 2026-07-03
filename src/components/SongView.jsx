@@ -72,60 +72,86 @@ export default function SongView({ song, transpose, viewMode, studyMode, current
   const strumDisplay = p ? p.s.map(s => s === 'D' ? '↓' : s === 'U' ? '↑' : s === 'X' ? '✕' : '·').join(' ') : ''
 
   const header = (
-    <div className="song-header">
-      <div className="stitle-row">
-        <div className="stitle">{song.title}</div>
+    <div className="song-header song-header-v2">
+      <div className="song-hero">
+        <div className="song-hero-main">
+          <h1 className="stitle">{song.title}</h1>
+          {song.artist && <div className="sartist">{song.artist}</div>}
+        </div>
         <button
           className={`fav-btn ${song.favorite ? 'active' : ''}`}
           onClick={() => onToggleFavorite && onToggleFavorite(song.id)}
           title={song.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          aria-label="Favoritar"
         >
           {song.favorite ? '★' : '☆'}
         </button>
       </div>
-      {song.artist && <div style={{fontSize:'0.85rem',color:'var(--text-dim)',marginBottom:4}}>{song.artist}</div>}
-      <div className="smeta">
-        Tom Original: <strong>{song.key}</strong>
-        {transpose !== 0 && ` · Transposto: ${transposeChord(song.key, transpose)}`}
+
+      <div className="song-meta-chips">
+        <div className="meta-chip meta-chip-key" title="Tom">
+          <span className="meta-chip-label">Tom</span>
+          <span className="meta-chip-value">
+            {transpose !== 0 ? transposeChord(song.key, transpose) : song.key}
+          </span>
+          {transpose !== 0 && (
+            <span className="meta-chip-hint">orig. {song.key}</span>
+          )}
+        </div>
+        <div className="meta-chip" title="Ritmo">
+          <span className="meta-chip-label">Ritmo</span>
+          <span className="meta-chip-value">{rhythm}</span>
+        </div>
+        <div className="meta-chip" title="Andamento">
+          <span className="meta-chip-label">BPM</span>
+          <span className="meta-chip-value">{song.bpm || p?.bpm || 80}</span>
+        </div>
+        {strumDisplay && (
+          <div className="meta-chip meta-chip-strum" title="Batida">
+            <span className="meta-chip-label">Batida</span>
+            <span className="meta-chip-value strum-inline">{strumDisplay}</span>
+          </div>
+        )}
       </div>
-      {uniqueChords.length > 0 && (
+
+      <div className="song-actions">
+        {uniqueChords.length > 0 && (
+          <button
+            className={`chord-list-toggle ${showChords ? 'open' : ''}`}
+            onClick={() => setShowChords(p => !p)}
+          >
+            <span className="chord-list-toggle-icon">{showChords ? '▾' : '▸'}</span>
+            <span>🎵 Acordes ({uniqueChords.length})</span>
+          </button>
+        )}
         <button
-          className={`chord-list-toggle ${showChords ? 'open' : ''}`}
-          onClick={() => setShowChords(p => !p)}
+          className={`chord-list-toggle ${simplified ? 'open' : ''}`}
+          onClick={() => setSimplified(p => !p)}
+          title={simplified ? 'Mostrando versão simplificada' : 'Mostrar todos os acordes'}
         >
-          <span className="chord-list-toggle-icon">{showChords ? '▾' : '▸'}</span>
-          <span>🎵 Acordes ({uniqueChords.length})</span>
+          <span className="chord-list-toggle-icon">{simplified ? '✓' : '○'}</span>
+          <span>📝 Simplificada</span>
         </button>
-      )}
-      <button
-        className={`chord-list-toggle ${simplified ? 'open' : ''}`}
-        onClick={() => setSimplified(p => !p)}
-        title={simplified ? 'Mostrando versão simplificada' : 'Mostrar todos os acordes'}
-        style={{ marginTop: 4 }}
-      >
-        <span className="chord-list-toggle-icon">{simplified ? '✓' : '○'}</span>
-        <span>📝 Cifra Simplificada</span>
-      </button>
-      {hasTab && (
+        {hasTab && (
+          <button
+            className={`chord-list-toggle ${hideTab ? 'open' : ''}`}
+            onClick={() => setHideTab(p => !p)}
+            title={hideTab ? 'Mostrar tablatura' : 'Ocultar tablatura'}
+          >
+            <span className="chord-list-toggle-icon">{hideTab ? '✓' : '○'}</span>
+            <span>🎸 Tab</span>
+          </button>
+        )}
         <button
-          className={`chord-list-toggle ${hideTab ? 'open' : ''}`}
-          onClick={() => setHideTab(p => !p)}
-          style={{ marginTop: 4 }}
-          title={hideTab ? 'Mostrar tablatura' : 'Ocultar tablatura'}
+          className="chord-list-toggle"
+          onClick={() => onExport && onExport()}
+          title="Exportar cifra"
         >
-          <span className="chord-list-toggle-icon">{hideTab ? '✓' : '○'}</span>
-          <span>🎸 Tab</span>
+          <span className="chord-list-toggle-icon">📤</span>
+          <span>Exportar</span>
         </button>
-      )}
-      <button
-        className="chord-list-toggle"
-        onClick={() => onExport && onExport()}
-        style={{ marginTop: 4 }}
-        title="Exportar cifra"
-      >
-        <span className="chord-list-toggle-icon">📤</span>
-        <span>Exportar</span>
-      </button>
+      </div>
+
       {showChords && (
         <div className="chord-list-grid">
           {uniqueChords.map(ch => (
@@ -133,11 +159,6 @@ export default function SongView({ song, transpose, viewMode, studyMode, current
           ))}
         </div>
       )}
-      <div className="song-rhythm-info">
-        <span>{rhythm}</span>
-        <span className="strum-inline">{strumDisplay}</span>
-        <span className="bpm-inline">{song.bpm || p?.bpm || 80} BPM</span>
-      </div>
     </div>
   )
 
