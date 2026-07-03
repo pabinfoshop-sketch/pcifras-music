@@ -931,7 +931,7 @@ export default function App() {
           <>
             <div className="topbar">
               <div className="topbar-title">🎸 songpcmusic</div>
-              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => setShowPremium(true)} title={isPremium ? 'Premium Ativo' : 'Apoiar o App'}>{isPremium ? '⭐' : '☕'}</button>
+              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={() => setShowModal(true)}>＋</button>
             </div>
             <div id="content" style={{paddingTop:8}}>
