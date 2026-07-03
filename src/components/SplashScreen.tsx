@@ -27,7 +27,7 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
         background:
           "radial-gradient(ellipse at center, #3a2418 0%, #1a0f0a 70%, #0c0603 100%)",
         opacity: leaving ? 0 : 1,
-        transition: "opacity 600ms ease",
+        transition: "opacity 800ms ease",
       }}
     >
       <div
