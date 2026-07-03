@@ -65,14 +65,15 @@ export default function App() {
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
   const openSupport = useCallback(() => {
-    if (isPremium) { setShowPremium(true); return }
     setShowSupport(true)
-  }, [isPremium])
-  const copyPix = useCallback(() => {
+  }, [])
+  const copyPix = useCallback(async () => {
     try {
-      navigator.clipboard?.writeText(SUPPORT_PIX_KEY)
-      setToast('Chave PIX copiada!')
-    } catch { setToast('Copie manualmente: ' + SUPPORT_PIX_KEY) }
+      await navigator.clipboard.writeText(SUPPORT_PIX_KEY)
+      setToast('Chave PIX copiada para a área de transferência')
+    } catch {
+      setToast('Copie manualmente: ' + SUPPORT_PIX_KEY)
+    }
   }, [])
   const API_URL = import.meta.env.VITE_API_URL || '/api'
 
@@ -1123,28 +1124,33 @@ export default function App() {
       {showTuner && <Tuner onClose={closeTuner} />}
 
       {showSupport && (
-        <div className="modal-bg" onClick={() => setShowSupport(false)}>
-          <div className="modal premium-modal" onClick={e => e.stopPropagation()} style={{maxWidth:420,margin:'auto',borderRadius:20}}>
+        <div className="modal-bg" onClick={() => setShowSupport(false)} role="dialog" aria-modal="true" aria-label="Apoiar o projeto">
+          <div className="modal premium-modal" onClick={e => e.stopPropagation()} style={{maxWidth:440,margin:'auto',borderRadius:20}}>
             <div className="modal-head">
               <div className="modal-title">
-                <span style={{fontSize:'1.3rem',marginRight:6}}>☕</span>
-                Apoie o Projeto
+                <span style={{fontSize:'1.3rem',marginRight:6}}>💚</span>
+                Apoiar o Projeto
               </div>
               <button className="modal-close" onClick={() => setShowSupport(false)} aria-label="Fechar">✕</button>
             </div>
-            <div className="modal-body" style={{padding:'20px 24px 24px'}}>
-              <p style={{fontSize:'0.92rem',lineHeight:1.5,color:'var(--text-dim)',marginTop:0}}>
-                O <strong>PCifrasMusic</strong> é feito com carinho e mantido de forma independente.
-                Seu apoio ajuda a <strong>manter o app no ar</strong>, pagar servidores e liberar
-                novas funções para todos os músicos.
+            <div className="modal-body" style={{padding:'18px 22px 22px'}}>
+              <p style={{fontSize:'0.95rem',lineHeight:1.55,color:'var(--text-dim)',margin:'0 0 6px'}}>
+                O <strong>PCifrasMusic</strong> é feito de forma independente. Seu apoio ajuda a
+                <strong> manter o app no ar</strong> e a liberar novas funções para todos os músicos.
               </p>
 
-              <div className="premium-pix" style={{marginTop:16}}>
-                <div className="premium-pix-label">💚 PIX — qualquer valor ajuda</div>
-                <div className="premium-pix-key" onClick={copyPix} style={{cursor:'pointer'}}>
-                  <code style={{fontSize:'0.85rem',wordBreak:'break-all'}}>{SUPPORT_PIX_KEY}</code>
+              <div className="premium-pix" style={{marginTop:18}}>
+                <div className="premium-pix-label">🔑 PIX — qualquer valor ajuda</div>
+                <button
+                  type="button"
+                  onClick={copyPix}
+                  className="premium-pix-key"
+                  style={{cursor:'pointer',width:'100%',textAlign:'left',border:0,background:'inherit',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}
+                  aria-label="Copiar chave PIX"
+                >
+                  <code style={{fontSize:'0.9rem',wordBreak:'break-all'}}>{SUPPORT_PIX_KEY}</code>
                   <span className="premium-pix-copy">📋</span>
-                </div>
+                </button>
                 <small className="premium-pix-hint">
                   Toque para copiar · {SUPPORT_PIX_NAME}
                 </small>
@@ -1155,26 +1161,28 @@ export default function App() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="premium-cta"
-                style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:16}}
+                style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:14}}
               >
-                ☕ Me pague um café
+                ☕ Apoiar com um café
               </a>
 
               <button
+                type="button"
                 className="premium-skip"
                 onClick={() => { setShowSupport(false); if (authUser) setShowPremium(true); else { setShowAuth(true); setAuthMode('register') } }}
-                style={{marginTop:10}}
+                style={{marginTop:10,width:'100%'}}
               >
-                ⭐ Ou assine o Premium (em breve mais benefícios)
+                ⭐ Assinar o Premium (em breve)
               </button>
 
-              <div className="premium-footer-note" style={{marginTop:14}}>
+              <div className="premium-footer-note" style={{marginTop:16,textAlign:'center'}}>
                 Obrigado por apoiar 💜 — <strong>PauloC®</strong>
               </div>
             </div>
           </div>
         </div>
       )}
+
 
       {showPremium && (
         <div className="modal-bg" onClick={() => setShowPremium(false)}>
