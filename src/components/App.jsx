@@ -14,6 +14,11 @@ import { parseCifraText } from '../utils/parser'
 const STORE_KEY = 'cifras_app_songs'
 const SETLISTS_KEY = 'cifras_setlists'
 
+// Configuração de apoio ao projeto — edite estes valores para os seus links reais
+const SUPPORT_PIX_KEY = 'apoio@pcifrasmusic.com'
+const SUPPORT_PIX_NAME = 'PauloC — PCifrasMusic'
+const SUPPORT_COFFEE_URL = 'https://www.buymeacoffee.com/pcifrasmusic'
+
 export default function App() {
   const [songs, setSongs] = useLocalStorage(STORE_KEY, [])
   const [setlists, setSetlists] = useLocalStorage(SETLISTS_KEY, [])
@@ -58,6 +63,17 @@ export default function App() {
   const [authToken, setAuthToken] = useLocalStorage('cifras_token', null)
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState('login')
+  const [showSupport, setShowSupport] = useState(false)
+  const openSupport = useCallback(() => {
+    if (isPremium) { setShowPremium(true); return }
+    setShowSupport(true)
+  }, [isPremium])
+  const copyPix = useCallback(() => {
+    try {
+      navigator.clipboard?.writeText(SUPPORT_PIX_KEY)
+      setToast('Chave PIX copiada!')
+    } catch { setToast('Copie manualmente: ' + SUPPORT_PIX_KEY) }
+  }, [])
   const API_URL = import.meta.env.VITE_API_URL || '/api'
 
   // Splash & health check desativados (Lovable Cloud)
@@ -779,7 +795,7 @@ export default function App() {
                           <button className="tbtn" onClick={() => { handleCloudRestore(); setShowMoreMenu(false) }}>☁️ Restaurar</button>
                         </>
                       )}
-                      <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => { setShowPremium(true); setShowMoreMenu(false) }}>{isPremium ? '⭐' : '☕'} Apoiar</button>
+                      <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => { openSupport(); setShowMoreMenu(false) }}>{isPremium ? '⭐' : '☕'} Apoiar</button>
                     </div>
                   </div>
                 </div>
@@ -863,7 +879,7 @@ export default function App() {
           <>
             <div className="topbar">
               <div className="topbar-title">📋 Repertórios</div>
-              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => setShowPremium(true)} title={isPremium ? 'Premium Ativo' : 'Apoiar o App'}>{isPremium ? '⭐' : '☕'}</button>
+              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={createSetlist}>＋</button>
             </div>
             <div id="content">
@@ -915,7 +931,7 @@ export default function App() {
           <>
             <div className="topbar">
               <div className="topbar-title">🎸 songpcmusic</div>
-              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => setShowPremium(true)} title={isPremium ? 'Premium Ativo' : 'Apoiar o App'}>{isPremium ? '⭐' : '☕'}</button>
+              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={() => setShowModal(true)}>＋</button>
             </div>
             <div id="content" style={{paddingTop:8}}>
@@ -1094,6 +1110,60 @@ export default function App() {
       )}
 
       {showTuner && <Tuner onClose={closeTuner} />}
+
+      {showSupport && (
+        <div className="modal-bg" onClick={() => setShowSupport(false)}>
+          <div className="modal premium-modal" onClick={e => e.stopPropagation()} style={{maxWidth:420,margin:'auto',borderRadius:20}}>
+            <div className="modal-head">
+              <div className="modal-title">
+                <span style={{fontSize:'1.3rem',marginRight:6}}>☕</span>
+                Apoie o Projeto
+              </div>
+              <button className="modal-close" onClick={() => setShowSupport(false)} aria-label="Fechar">✕</button>
+            </div>
+            <div className="modal-body" style={{padding:'20px 24px 24px'}}>
+              <p style={{fontSize:'0.92rem',lineHeight:1.5,color:'var(--text-dim)',marginTop:0}}>
+                O <strong>PCifrasMusic</strong> é feito com carinho e mantido de forma independente.
+                Seu apoio ajuda a <strong>manter o app no ar</strong>, pagar servidores e liberar
+                novas funções para todos os músicos.
+              </p>
+
+              <div className="premium-pix" style={{marginTop:16}}>
+                <div className="premium-pix-label">💚 PIX — qualquer valor ajuda</div>
+                <div className="premium-pix-key" onClick={copyPix} style={{cursor:'pointer'}}>
+                  <code style={{fontSize:'0.85rem',wordBreak:'break-all'}}>{SUPPORT_PIX_KEY}</code>
+                  <span className="premium-pix-copy">📋</span>
+                </div>
+                <small className="premium-pix-hint">
+                  Toque para copiar · {SUPPORT_PIX_NAME}
+                </small>
+              </div>
+
+              <a
+                href={SUPPORT_COFFEE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="premium-cta"
+                style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:16}}
+              >
+                ☕ Me pague um café
+              </a>
+
+              <button
+                className="premium-skip"
+                onClick={() => { setShowSupport(false); if (authUser) setShowPremium(true); else { setShowAuth(true); setAuthMode('register') } }}
+                style={{marginTop:10}}
+              >
+                ⭐ Ou assine o Premium (em breve mais benefícios)
+              </button>
+
+              <div className="premium-footer-note" style={{marginTop:14}}>
+                Obrigado por apoiar 💜 — <strong>PauloC®</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showPremium && (
         <div className="modal-bg" onClick={() => setShowPremium(false)}>
