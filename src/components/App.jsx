@@ -164,20 +164,35 @@ export default function App() {
       showToast('Preencha email e senha.')
       return false
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cleanEmail)) {
+      showToast('Digite um email válido (ex: seu@email.com).')
+      return false
+    }
     if (password.length < 6) {
       showToast('A senha precisa ter pelo menos 6 caracteres.')
       return false
     }
+    const mapError = (err) => {
+      const raw = err?.message || ''
+      const code = err?.code || ''
+      if (/invalid.*credentials|invalid.*login/i.test(raw)) return 'Email ou senha incorretos.'
+      if (/email.*not.*confirmed/i.test(raw)) return 'Confirme seu email antes de entrar.'
+      if (code === 'user_already_exists' || /already.*registered|already.*exists|user.*exists/i.test(raw))
+        return 'Este email já tem conta. Tente entrar.'
+      if (code === 'weak_password' || /weak.*password|pwned|leaked/i.test(raw))
+        return 'Senha muito fraca ou vazada. Use algo mais forte (letras, números e símbolos).'
+      if (code === 'email_address_invalid' || /email.*invalid|invalid.*email/i.test(raw))
+        return 'Este email foi recusado pelo servidor. Tente outro endereço real.'
+      if (code === 'signup_disabled' || /signup.*disabled/i.test(raw))
+        return 'Novos cadastros estão temporariamente desativados.'
+      if (/rate.*limit|too.*many/i.test(raw))
+        return 'Muitas tentativas. Aguarde alguns instantes e tente novamente.'
+      return raw || 'Não foi possível completar o cadastro.'
+    }
     try {
       if (mode === 'login') {
         const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password })
-        if (error) {
-          const msg = /invalid/i.test(error.message)
-            ? 'Email ou senha incorretos.'
-            : (error.message || 'Não foi possível entrar.')
-          showToast(msg)
-          return false
-        }
+        if (error) { showToast(mapError(error)); return false }
         const u = await refreshProfile(data.user)
         setShowAuth(false)
         showToast(`Bem-vindo${u?.name ? `, ${u.name}` : ''}!`)
@@ -191,28 +206,32 @@ export default function App() {
             emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
           },
         })
-        if (error) {
-          const msg = /registered|exists/i.test(error.message)
-            ? 'Este email já tem conta. Tente entrar.'
-            : (error.message || 'Não foi possível criar a conta.')
-          showToast(msg)
-          return false
-        }
-        if (!data.session) {
+        if (error) { showToast(mapError(error)); return false }
+        if (data.session?.user) {
+          const u = await refreshProfile(data.session.user)
           setShowAuth(false)
-          showToast('Conta criada! Verifique seu email para confirmar.')
+          showToast(`Conta criada! Bem-vindo${u?.name ? `, ${u.name}` : ''} 🎉 7 dias grátis ativados`)
           return true
         }
-        await refreshProfile(data.user)
-        setShowAuth(false)
-        showToast('Conta criada! 7 dias grátis ativados 🎉')
-        return true
+        // Fallback: signup succeeded but no session (confirmation required)
+        try {
+          const { data: signed } = await supabase.auth.signInWithPassword({ email: cleanEmail, password })
+          if (signed?.user) {
+            const u = await refreshProfile(signed.user)
+            setShowAuth(false)
+            showToast(`Conta criada! Bem-vindo${u?.name ? `, ${u.name}` : ''} 🎉`)
+            return true
+          }
+        } catch {}
+        showToast('Conta criada! Verifique seu email para confirmar antes de entrar.')
+        return false
       }
     } catch (e) {
-      showToast('Sem conexão. Tente novamente em instantes.')
+      showToast(e?.message || 'Sem conexão. Tente novamente em instantes.')
       return false
     }
   }, [refreshProfile, showToast, setAuthUser])
+
 
   const handleLogout = useCallback(async () => {
     try { await supabase.auth.signOut() } catch {}
@@ -1152,14 +1171,17 @@ export default function App() {
                 ☕ Apoiar com um café
               </a>
 
-              <button
-                type="button"
-                className="premium-skip"
-                onClick={() => { setShowSupport(false); if (authUser) setShowPremium(true); else { setShowAuth(true); setAuthMode('register') } }}
-                style={{marginTop:10,width:'100%'}}
-              >
-                ⭐ Assinar o Premium (em breve)
-              </button>
+              {!authUser && (
+                <button
+                  type="button"
+                  className="premium-skip"
+                  onClick={() => { setShowSupport(false); setShowAuth(true); setAuthMode('register') }}
+                  style={{marginTop:10,width:'100%'}}
+                >
+                  🎉 Criar conta grátis (7 dias Premium)
+                </button>
+              )}
+
 
               <div className="premium-footer-note" style={{marginTop:16,textAlign:'center'}}>
                 Obrigado por apoiar 💜 — <strong>PauloC®</strong>
