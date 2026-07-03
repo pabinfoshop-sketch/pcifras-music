@@ -585,32 +585,17 @@ export default function App() {
   }, [setSongs, setSetlists, showToast])
 
   const handleCloudSync = useCallback(async () => {
-    if (!authToken) { showToast('Entre na sua conta para continuar'); return }
+    if (!authUser) { showToast('Entre na sua conta para continuar'); return }
     if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
-    try {
-      const res = await fetch(`${API_URL}/sync/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
-        body: JSON.stringify({ songs, setlists }),
-      })
-      if (res.ok) showToast('Tudo salvo na nuvem com segurança')
-      else { const d = await res.json(); showToast(d.error || 'Erro ao sincronizar') }
-    } catch { showToast('Sem conexão. Tente novamente em instantes.') }
-  }, [API_URL, authToken, isPremium, songs, setlists, showToast])
+    showToast('Backup na nuvem em breve — seus dados seguem salvos neste dispositivo.')
+  }, [authUser, isPremium, showToast])
 
   const handleCloudRestore = useCallback(async () => {
-    if (!authToken) { showToast('Entre na sua conta para continuar'); return }
+    if (!authUser) { showToast('Entre na sua conta para continuar'); return }
     if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
-    try {
-      const res = await fetch(`${API_URL}/sync/load`, { headers: { Authorization: `Bearer ${authToken}` } })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.songs?.length) setSongs(data.songs)
-        if (data.setlists?.length) setSetlists(data.setlists)
-        showToast(`${data.songs?.length || 0} músicas restauradas da nuvem`)
-      } else { const d = await res.json(); showToast(d.error || 'Erro ao restaurar') }
-    } catch { showToast('Sem conexão. Tente novamente em instantes.') }
-  }, [API_URL, authToken, isPremium, setSongs, setSetlists, showToast])
+    showToast('Restauração na nuvem em breve — assim que o backup for ativado.')
+  }, [authUser, isPremium, showToast])
+
 
   const handleShare = useCallback(() => {
     if (!currentSong) return
