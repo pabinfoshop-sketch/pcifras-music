@@ -65,14 +65,15 @@ export default function App() {
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
   const openSupport = useCallback(() => {
-    if (isPremium) { setShowPremium(true); return }
     setShowSupport(true)
-  }, [isPremium])
-  const copyPix = useCallback(() => {
+  }, [])
+  const copyPix = useCallback(async () => {
     try {
-      navigator.clipboard?.writeText(SUPPORT_PIX_KEY)
-      setToast('Chave PIX copiada!')
-    } catch { setToast('Copie manualmente: ' + SUPPORT_PIX_KEY) }
+      await navigator.clipboard.writeText(SUPPORT_PIX_KEY)
+      setToast('Chave PIX copiada para a área de transferência')
+    } catch {
+      setToast('Copie manualmente: ' + SUPPORT_PIX_KEY)
+    }
   }, [])
   const API_URL = import.meta.env.VITE_API_URL || '/api'
 
