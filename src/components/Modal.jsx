@@ -3,7 +3,7 @@ import { parseCifraText } from '../utils/parser'
 import { detectKey } from '../utils/chordDiagrams'
 
 export default function Modal({ onAdd, onClose }) {
-  const [tab, setTab] = useState('search')
+  const [tab, setTab] = useState('manual')
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('idle')
   const [results, setResults] = useState([])
