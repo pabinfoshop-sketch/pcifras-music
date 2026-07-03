@@ -230,11 +230,7 @@ export default function App() {
   }, [authUser, showToast])
 
   // PIX de assinatura desativado — apoio via PIX está no modal "Apoiar o Projeto".
-  const pixData = null
-  const pixLoading = false
-  const handleGeneratePix = useCallback(() => {
-    showToast('Pagamento por PIX em breve. Use a aba "Apoiar o Projeto" para contribuir agora.')
-  }, [showToast])
+
 
   const handleCancelSubscription = useCallback(() => {
     showToast('Gerenciamento de assinatura estará disponível quando a cobrança for ativada.')
