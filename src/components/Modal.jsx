@@ -95,6 +95,8 @@ export default function Modal({ onAdd, onClose }) {
     setStatus('idle')
     setResults([])
     setFetching(null)
+    setErrorMsg('')
+    setTab('search')
     setManualTitle('')
     setManualKey('G')
     setManualRhythm('Hino 4/4')
