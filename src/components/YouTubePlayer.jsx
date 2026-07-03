@@ -31,6 +31,7 @@ export default function YouTubePlayer({
   const [internalId, setInternalId] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isReady, setIsReady] = useState(false)
+  const [hasError, setHasError] = useState(false)
   const [duration, setDuration] = useState(0)
   const [curTime, setCurTime] = useState(0)
   const [volume, setVolume] = useState(80)
@@ -47,10 +48,10 @@ export default function YouTubePlayer({
     if (videoId) setInternalId(null)
   }, [videoId])
 
-  // Cria o player apenas quando houver videoId
   useEffect(() => {
     if (!vid) return
     let mounted = true
+    setHasError(false)
     loadYT().then(YT => {
       if (!mounted || !containerRef.current) return
       if (playerRef.current) {
@@ -65,14 +66,8 @@ export default function YouTubePlayer({
         width: '1',
         videoId: vid,
         playerVars: {
-          controls: 0,
-          modestbranding: 1,
-          rel: 0,
-          iv_load_policy: 3,
-          disablekb: 1,
-          fs: 0,
-          playsinline: 1,
-          autoplay: 0,
+          controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3,
+          disablekb: 1, fs: 0, playsinline: 1, autoplay: 0,
         },
         events: {
           onReady: e => {
@@ -86,23 +81,13 @@ export default function YouTubePlayer({
           onStateChange: e => {
             if (!mounted) return
             const YT = window.YT
-            if (e.data === YT.PlayerState.PLAYING) {
-              setIsPlaying(true)
-              onPlayingChange?.(true)
-            } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.CUED) {
-              setIsPlaying(false)
-              onPlayingChange?.(false)
-            } else if (e.data === YT.PlayerState.ENDED) {
-              setIsPlaying(false)
-              onPlayingChange?.(false)
-            } else if (e.data === YT.PlayerState.BUFFERING) {
-              // buffering
-            }
+            if (e.data === YT.PlayerState.PLAYING) { setIsPlaying(true); onPlayingChange?.(true) }
+            else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.CUED) { setIsPlaying(false); onPlayingChange?.(false) }
+            else if (e.data === YT.PlayerState.ENDED) { setIsPlaying(false); onPlayingChange?.(false) }
           },
           onError: () => {
             if (!mounted) return
-            setIsReady(false)
-            setIsPlaying(false)
+            setIsReady(false); setIsPlaying(false); setHasError(true)
           },
         },
       })
@@ -110,7 +95,6 @@ export default function YouTubePlayer({
     return () => { mounted = false; if (playerRef.current) { try { playerRef.current.destroy() } catch {}; playerRef.current = null } }
   }, [vid])
 
-  // Sincroniza o player com o videoId atual
   useEffect(() => {
     if (!playerRef.current || !readyRef.current) return
     const id = vid
@@ -118,13 +102,10 @@ export default function YouTubePlayer({
     if (id) {
       try {
         playerRef.current.cueVideoById(id)
-        setIsPlaying(false)
-        onPlayingChange?.(false)
+        setIsPlaying(false); onPlayingChange?.(false)
         try { setDuration(playerRef.current.getDuration() || 0) } catch { setDuration(0) }
         setCurTime(0)
-      } catch (e) {
-        console.warn('YT cueVideoById error:', e)
-      }
+      } catch (e) { console.warn('YT cueVideoById error:', e) }
     }
   }, [vid])
 
@@ -144,32 +125,20 @@ export default function YouTubePlayer({
 
   const togglePlay = () => {
     if (!playerRef.current) return
-    try {
-      if (isPlaying) playerRef.current.pauseVideo()
-      else playerRef.current.playVideo()
-    } catch {}
+    try { if (isPlaying) playerRef.current.pauseVideo(); else playerRef.current.playVideo() } catch {}
   }
-
   const restart = () => {
     if (!playerRef.current) return
-    try {
-      playerRef.current.seekTo(0, true)
-      playerRef.current.playVideo()
-    } catch {}
+    try { playerRef.current.seekTo(0, true); playerRef.current.playVideo() } catch {}
   }
-
   const handleSeek = e => {
     if (!playerRef.current) return
     try { playerRef.current.seekTo(parseFloat(e.target.value), true); setCurTime(parseFloat(e.target.value)) } catch {}
   }
-
   const handleVolume = e => setVolume(parseInt(e.target.value))
 
   const runSearch = async () => {
-    setSearchOpen(true)
-    setSearching(true)
-    setResults([])
-    setSearchError('')
+    setSearchOpen(true); setSearching(true); setResults([]); setSearchError('')
     if (!songTitle) { setSearching(false); setSearchError('Sem música para buscar.'); return }
     const key = useKey ? (songKey || '') : ''
     try {
@@ -184,39 +153,50 @@ export default function YouTubePlayer({
       if (!data.results?.length) setSearchError('Nenhum resultado. Tente outra opção.')
     } catch {
       setSearchError('Falha na busca.')
-    } finally {
-      setSearching(false)
-    }
+    } finally { setSearching(false) }
   }
 
   const pickResult = r => {
-    setInternalId(r.id)
-    setSearchOpen(false)
-    setResults([])
-    setSearchError('')
+    setInternalId(r.id); setSearchOpen(false); setResults([]); setSearchError('')
     onPick?.(r.id)
   }
 
   const fmt = s => { s = Math.floor(s || 0); return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}` }
 
-  const dl = label || (mode === 'playback' ? 'Playback' : 'Original')
-  const di = mode === 'playback' ? '🎵' : '🎤'
+  const isPlayback = mode === 'playback'
+  const dl = label || (isPlayback ? 'Playback' : 'Original')
+  const di = isPlayback ? '🎹' : '🎤'
+  const modeTag = isPlayback ? 'Playback' : 'Original'
+
+  // State: error | loading | available | unavailable
+  let stateKey = 'unavailable'
+  let stateLabel = 'Indisponível'
+  if (hasError) { stateKey = 'error'; stateLabel = 'Erro ao carregar' }
+  else if (vid && !isReady) { stateKey = 'loading'; stateLabel = 'Carregando…' }
+  else if (vid && isReady) { stateKey = 'available'; stateLabel = 'Pronto' }
 
   return (
-    <div className={`dual-player-row mode-${mode}${isPlaying ? ' playing' : ''}`}>
+    <div className={`dual-player-row mode-${mode}${isPlaying ? ' playing' : ''} state-${stateKey}`}>
       <div ref={containerRef}
         style={{position:'absolute',width:1,height:1,opacity:0,pointerEvents:'none',left:'-9999px',top:'-9999px',overflow:'hidden',visibility:'hidden'}} />
       <div className="dual-player-bar">
-        <span className="dual-player-icon">{di}</span>
-        <span className="dual-player-label">{dl}</span>
+        <span className="dual-player-icon" aria-hidden="true">{di}</span>
+        <div className="dual-player-titles">
+          <span className={`dual-player-tag mode-${mode}`}>{modeTag}</span>
+          <span className="dual-player-label">{dl}</span>
+        </div>
+        <span className={`dual-player-state state-${stateKey}`} title={stateLabel}>
+          <span className="dual-player-dot" />{stateLabel}
+        </span>
         <button className="dual-player-btn play" onClick={togglePlay}
           disabled={!vid || !isReady}
+          aria-label={isPlaying ? 'Pausar' : 'Tocar'}
           title={isPlaying ? 'Pausar' : 'Tocar'}>{isPlaying ? '⏸' : '▶'}</button>
         <button className="dual-player-btn" onClick={restart}
-          disabled={!vid || !isReady} title="Reiniciar">🔄</button>
-        <button className="dual-player-btn" onClick={runSearch} title="Buscar">🔍</button>
+          disabled={!vid || !isReady} title="Reiniciar" aria-label="Reiniciar">🔄</button>
+        <button className="dual-player-btn" onClick={runSearch} title="Buscar outra versão" aria-label="Buscar">🔍</button>
       </div>
-      {vid ? (
+      {vid && !hasError ? (
         <div className="dual-player-progress-row">
           <span className="dual-player-time">{fmt(curTime)}</span>
           <input type="range" min="0" max={duration || 0} step="0.1"
@@ -228,13 +208,17 @@ export default function YouTubePlayer({
             onChange={handleVolume} className="dual-player-vol" title="Volume" />
         </div>
       ) : !searchOpen && (
-        <div className="dual-player-status">Toque em 🔍 para carregar</div>
+        <div className="dual-player-status">
+          {hasError
+            ? 'Não foi possível carregar. Toque em 🔍 para escolher outra versão.'
+            : `Nenhum ${modeTag.toLowerCase()} vinculado. Toque em 🔍 para buscar.`}
+        </div>
       )}
       {searchOpen && (
         <div className="dual-player-search">
           <div className="dual-player-search-head">
-            <span>🔍 Buscar {dl}</span>
-            <button onClick={() => setSearchOpen(false)}>✕</button>
+            <span>🔍 Buscar {modeTag}</span>
+            <button onClick={() => setSearchOpen(false)} aria-label="Fechar busca">✕</button>
           </div>
           <div className="dual-player-search-options">
             <label className="dual-player-opt">
