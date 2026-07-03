@@ -795,7 +795,7 @@ export default function App() {
                           <button className="tbtn" onClick={() => { handleCloudRestore(); setShowMoreMenu(false) }}>☁️ Restaurar</button>
                         </>
                       )}
-                      <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => { setShowPremium(true); setShowMoreMenu(false) }}>{isPremium ? '⭐' : '☕'} Apoiar</button>
+                      <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => { openSupport(); setShowMoreMenu(false) }}>{isPremium ? '⭐' : '☕'} Apoiar</button>
                     </div>
                   </div>
                 </div>
