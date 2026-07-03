@@ -1277,28 +1277,15 @@ export default function App() {
                   <button className="premium-cta" onClick={handleSubscribe}>
                     💳 Assinar Premium — R$ 24,90/mês
                   </button>
-
-                  <div className="premium-pix">
-                    <div className="premium-pix-label">Ou faça um PIX avulso de qualquer valor</div>
-                    {pixData?.qr_code_base64 ? (
-                      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8,marginTop:8}}>
-                        <img src={`data:image/png;base64,${pixData.qr_code_base64}`} alt="QR Code PIX" style={{width:200,height:200,background:'#fff',padding:8,borderRadius:8}} />
-                        <div className="premium-pix-key" onClick={() => { navigator.clipboard?.writeText(pixData.qr_code); showToast('Código PIX copiado!') }}>
-                          <code style={{fontSize:'0.7rem',wordBreak:'break-all'}}>{pixData.qr_code}</code>
-                          <span className="premium-pix-copy">📋</span>
-                        </div>
-                        <small className="premium-pix-hint">Toque no código para copiar · valor R$ {Number(pixData.amount).toFixed(2).replace('.', ',')}</small>
-                      </div>
-                    ) : (
-                      <button className="premium-skip" onClick={() => handleGeneratePix(24.90)} disabled={pixLoading} style={{marginTop:6}}>
-                        {pixLoading ? '⏳ Gerando...' : '🪙 Gerar QR Code PIX (R$ 24,90)'}
-                      </button>
-                    )}
+                  <div style={{fontSize:'0.78rem',color:'var(--text-dim)',textAlign:'center',marginTop:8,lineHeight:1.5}}>
+                    A cobrança está em ativação. Enquanto isso, você pode
+                    <button className="link-btn" onClick={() => { setShowPremium(false); openSupport() }} style={{marginLeft:4}}>apoiar o projeto</button>.
                   </div>
 
-                  <button className="premium-skip" onClick={() => setShowPremium(false)}>
+                  <button className="premium-skip" onClick={() => setShowPremium(false)} style={{marginTop:12}}>
                     Talvez depois
                   </button>
+
 
                   <div className="premium-footer-note">
                     Conectado como <strong>{authUser.email}</strong> · <button className="link-btn" onClick={handleLogout}>Sair</button>
