@@ -23,39 +23,46 @@ export default function Modal({ onAdd, onClose }) {
     setStatus('searching')
     setResults([])
     setFetching(null)
+    setErrorMsg('')
     try {
       const res = await fetch(`${API_URL}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
       })
-      const data = await res.json()
-      if (data.error) throw new Error(data.error)
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error) {
+        setErrorMsg(data.error || `Erro ${res.status} ao buscar`)
+        setStatus('error')
+        return
+      }
       setResults(data.results || [])
       setStatus(data.results?.length > 0 ? 'found' : 'notfound')
-    } catch {
+    } catch (e) {
+      setErrorMsg(e?.message || 'Sem conexão com o servidor de busca')
       setStatus('error')
     }
   }
 
   const handleSelectResult = async (song) => {
     setFetching(song.url)
+    setErrorMsg('')
     try {
       const res = await fetch(`${API_URL}/fetch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: song.url, key: song.key }),
       })
-      const data = await res.json()
-      if (data.error || !data.text || data.text.length < 30) {
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error || !data.text || data.text.length < 30) {
         setFetching(null)
-        setStatus('notfound')
+        setErrorMsg(data.error || 'Cifra não pôde ser carregada desta página')
+        setStatus('error')
         return
       }
       const songKey = data.key || song.key || 'C'
       const songObj = parseCifraText(data.text, data.title || song.title, songKey, 'Hino 4/4')
       songObj.artist = data.artist || song.artist_name || ''
-      // Detect key from actual chords
       const allChords = []
       for (const sec of songObj.sections || []) {
         for (const line of sec.lines || []) {
@@ -65,13 +72,12 @@ export default function Modal({ onAdd, onClose }) {
           }
         }
       }
-      if (allChords.length) {
-        songObj.key = detectKey(allChords)
-      }
+      if (allChords.length) songObj.key = detectKey(allChords)
       onAdd(songObj)
       reset()
-    } catch {
+    } catch (e) {
       setFetching(null)
+      setErrorMsg(e?.message || 'Falha ao carregar a cifra')
       setStatus('error')
     }
   }
