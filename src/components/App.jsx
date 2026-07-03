@@ -1353,12 +1353,14 @@ export default function App() {
 
       {showAuth && <AuthModal mode={authMode} setMode={setAuthMode} onAuth={handleAuth} onClose={() => setShowAuth(false)} />}
 
-      <ConfirmDialog
-        message="Remover música?"
-        subMessage={confirmDelete ? `"${confirmDelete.title}"` : ''}
-        onConfirm={confirmDeleteSong}
-        onCancel={() => setConfirmDelete(null)}
-      />
+      {confirmDelete && (
+        <ConfirmDialog
+          message="Remover música?"
+          subMessage={`"${confirmDelete.title}"`}
+          onConfirm={confirmDeleteSong}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
       <Toast message={toast} />
     </div>
     </ErrorBoundary>
