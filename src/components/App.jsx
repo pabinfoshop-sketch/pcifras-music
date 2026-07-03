@@ -806,12 +806,17 @@ export default function App() {
             <div className={`dual-players-container${playersCollapsed ? ' hidden' : ''}`}>
               {playersCollapsed ? (
                 <button className="dual-players-toggle dual-players-show" onClick={() => setPlayersCollapsed(false)} title="Mostrar players">
-                  🎵 Players
+                  🎧 Mostrar players
                 </button>
               ) : (
-                <button className="dual-players-toggle" onClick={() => setPlayersCollapsed(true)} title="Ocultar players">
-                  ▴ Ocultar
-                </button>
+                <>
+                  <div className="dual-players-header">
+                    <span className="dual-players-title">🎧 Players da música</span>
+                    <button className="dual-players-toggle" onClick={() => setPlayersCollapsed(true)} title="Ocultar players">
+                      ▴ Ocultar
+                    </button>
+                  </div>
+                </>
               )}
               <YouTubePlayer
                 key={`yt-original-${currentSong.id}`}
