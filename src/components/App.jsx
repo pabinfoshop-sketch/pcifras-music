@@ -84,10 +84,10 @@ export default function App() {
   const [showPremium, setShowPremium] = useState(false)
   const [isPremium, setIsPremium] = useLocalStorage('cifras_premium', false)
   const [authUser, setAuthUser] = useLocalStorage('cifras_user', null)
-  const [authToken, setAuthToken] = useLocalStorage('cifras_token', null)
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
+  const isPremium = !!authUser?.premium
   const openSupport = useCallback(() => {
     setShowSupport(true)
   }, [])
@@ -99,7 +99,6 @@ export default function App() {
       setToast('Copie manualmente: ' + SUPPORT_PIX_KEY)
     }
   }, [])
-  const API_URL = import.meta.env.VITE_API_URL || '/api'
 
   // Splash & health check desativados (Lovable Cloud)
   useEffect(() => {}, [])
