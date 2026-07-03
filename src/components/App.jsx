@@ -923,7 +923,7 @@ export default function App() {
                 <div className="welcome">
                   <div className="welcome-icon">♫</div>
                   <h2>Suas Cifras</h2>
-                  <p>Adicione suas cifras manualmente e organize seu repertório.</p>
+                  <p>Busque cifras online ou adicione manualmente.</p>
                 </div>
               ) : (
                 <>

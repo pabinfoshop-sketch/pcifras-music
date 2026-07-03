@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TunerRouteImport } from './routes/tuner'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as ApiFetchRouteImport } from './routes/api/fetch'
 
 const TunerRoute = TunerRouteImport.update({
   id: '/tuner',
@@ -22,31 +24,49 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSearchRoute = ApiSearchRouteImport.update({
+  id: '/api/search',
+  path: '/api/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFetchRoute = ApiFetchRouteImport.update({
+  id: '/api/fetch',
+  path: '/api/fetch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tuner': typeof TunerRoute
+  '/api/fetch': typeof ApiFetchRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/tuner': typeof TunerRoute
+  '/api/fetch': typeof ApiFetchRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/tuner': typeof TunerRoute
+  '/api/fetch': typeof ApiFetchRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tuner'
+  fullPaths: '/' | '/tuner' | '/api/fetch' | '/api/search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tuner'
-  id: '__root__' | '/' | '/tuner'
+  to: '/' | '/tuner' | '/api/fetch' | '/api/search'
+  id: '__root__' | '/' | '/tuner' | '/api/fetch' | '/api/search'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TunerRoute: typeof TunerRoute
+  ApiFetchRoute: typeof ApiFetchRoute
+  ApiSearchRoute: typeof ApiSearchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +85,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/search': {
+      id: '/api/search'
+      path: '/api/search'
+      fullPath: '/api/search'
+      preLoaderRoute: typeof ApiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/fetch': {
+      id: '/api/fetch'
+      path: '/api/fetch'
+      fullPath: '/api/fetch'
+      preLoaderRoute: typeof ApiFetchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TunerRoute: TunerRoute,
+  ApiFetchRoute: ApiFetchRoute,
+  ApiSearchRoute: ApiSearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

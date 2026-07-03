@@ -3,7 +3,8 @@ import { parseCifraText } from '../utils/parser'
 import { detectKey } from '../utils/chordDiagrams'
 
 export default function Modal({ onAdd, onClose }) {
-  const [tab, setTab] = useState('manual')
+  const [tab, setTab] = useState('search')
+  const [errorMsg, setErrorMsg] = useState('')
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('idle')
   const [results, setResults] = useState([])
@@ -22,39 +23,46 @@ export default function Modal({ onAdd, onClose }) {
     setStatus('searching')
     setResults([])
     setFetching(null)
+    setErrorMsg('')
     try {
       const res = await fetch(`${API_URL}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
       })
-      const data = await res.json()
-      if (data.error) throw new Error(data.error)
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error) {
+        setErrorMsg(data.error || `Erro ${res.status} ao buscar`)
+        setStatus('error')
+        return
+      }
       setResults(data.results || [])
       setStatus(data.results?.length > 0 ? 'found' : 'notfound')
-    } catch {
+    } catch (e) {
+      setErrorMsg(e?.message || 'Sem conexão com o servidor de busca')
       setStatus('error')
     }
   }
 
   const handleSelectResult = async (song) => {
     setFetching(song.url)
+    setErrorMsg('')
     try {
       const res = await fetch(`${API_URL}/fetch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: song.url, key: song.key }),
       })
-      const data = await res.json()
-      if (data.error || !data.text || data.text.length < 30) {
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error || !data.text || data.text.length < 30) {
         setFetching(null)
-        setStatus('notfound')
+        setErrorMsg(data.error || 'Cifra não pôde ser carregada desta página')
+        setStatus('error')
         return
       }
       const songKey = data.key || song.key || 'C'
       const songObj = parseCifraText(data.text, data.title || song.title, songKey, 'Hino 4/4')
       songObj.artist = data.artist || song.artist_name || ''
-      // Detect key from actual chords
       const allChords = []
       for (const sec of songObj.sections || []) {
         for (const line of sec.lines || []) {
@@ -64,13 +72,12 @@ export default function Modal({ onAdd, onClose }) {
           }
         }
       }
-      if (allChords.length) {
-        songObj.key = detectKey(allChords)
-      }
+      if (allChords.length) songObj.key = detectKey(allChords)
       onAdd(songObj)
       reset()
-    } catch {
+    } catch (e) {
       setFetching(null)
+      setErrorMsg(e?.message || 'Falha ao carregar a cifra')
       setStatus('error')
     }
   }
@@ -88,6 +95,8 @@ export default function Modal({ onAdd, onClose }) {
     setStatus('idle')
     setResults([])
     setFetching(null)
+    setErrorMsg('')
+    setTab('search')
     setManualTitle('')
     setManualKey('G')
     setManualRhythm('Hino 4/4')
@@ -108,9 +117,87 @@ export default function Modal({ onAdd, onClose }) {
           <button className="modal-close" onClick={reset}>✕</button>
         </div>
         <div className="modal-body">
-          {/* Busca online temporariamente desativada — apenas entrada manual disponível */}
+          <div className="tab-row">
+            <button
+              className={`tab-btn ${tab === 'search' ? 'active' : ''}`}
+              onClick={() => { setTab('search'); setStatus('idle'); setErrorMsg('') }}
+            >
+              Buscar Online
+            </button>
+            <button
+              className={`tab-btn ${tab === 'manual' ? 'active' : ''}`}
+              onClick={() => setTab('manual')}
+            >
+              Digitar Manual
+            </button>
+          </div>
 
+          {tab === 'search' && (
+            <div>
+              <label className="form-label">Nome da música ou artista</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  ref={inputRef}
+                  className="form-input"
+                  placeholder="ex: Vem a Jesus"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  autoFocus
+                />
+                <button
+                  className="form-submit"
+                  style={{ width: 'auto', padding: '0 18px', margin: 0 }}
+                  onClick={handleSearch}
+                  disabled={status === 'searching' || !query.trim()}
+                >
+                  {status === 'searching' ? '...' : 'Buscar'}
+                </button>
+              </div>
 
+              {status === 'searching' && (
+                <div className="form-note" style={{ marginTop: 14 }}>
+                  Procurando cifras…
+                </div>
+              )}
+
+              {status === 'notfound' && (
+                <div className="form-note" style={{ marginTop: 14 }}>
+                  Nenhum resultado para "{query}". Tente outras palavras ou adicione manualmente.
+                </div>
+              )}
+
+              {status === 'error' && (
+                <div className="form-note" style={{ marginTop: 14, color: '#ff9a9a' }}>
+                  ⚠ {errorMsg || 'Não foi possível buscar agora. Tente novamente.'}
+                </div>
+              )}
+
+              {status === 'found' && results.length > 0 && (
+                <ul className="search-results" style={{ listStyle: 'none', padding: 0, marginTop: 14, maxHeight: 340, overflowY: 'auto' }}>
+                  {results.map((r) => (
+                    <li key={r.url} style={{ marginBottom: 6 }}>
+                      <button
+                        onClick={() => handleSelectResult(r)}
+                        disabled={fetching === r.url}
+                        style={{
+                          width: '100%', textAlign: 'left', padding: '10px 12px',
+                          background: fetching === r.url ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
+                          color: 'inherit', cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{ fontWeight: 600 }}>{r.title}</div>
+                        <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                          {r.artist_name}{fetching === r.url ? ' — carregando…' : ''}
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           {tab === 'manual' && (
             <div>
