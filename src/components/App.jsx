@@ -1132,7 +1132,7 @@ export default function App() {
             <span className="nav-icon-wrap"><span className="nav-icon">📋</span></span>
             <span className="nav-label">Repertórios</span>
           </div>
-          <div className={`nav-item profile-btn${isPremium ? ' is-premium' : ''}`} onClick={() => { if (authUser) { setShowPremium(true) } else { setShowAuth(true); setAuthMode('login') } }}>
+          <div className={`nav-item profile-btn${isPremium ? ' is-premium' : ''}${screen === 'account' ? ' active' : ''}`} onClick={() => { if (authUser) { setScreen('account'); stopMetro() } else { setShowAuth(true); setAuthMode('login') } }}>
             <span className="nav-icon-wrap">
               {authUser ? (
                 <span className="nav-avatar">{authUser.name.charAt(0).toUpperCase()}</span>
