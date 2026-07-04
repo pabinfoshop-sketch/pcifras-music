@@ -1,10 +1,11 @@
 import { useState } from 'react'
 
-export default function AuthModal({ mode, setMode, onAuth, onClose }) {
+export default function AuthModal({ mode, setMode, onAuth, onGoogle, onClose }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
   const submit = async e => {
     e.preventDefault()
@@ -14,11 +15,13 @@ export default function AuthModal({ mode, setMode, onAuth, onClose }) {
     setLoading(true)
     const ok = await onAuth(mode, name, email, password)
     setLoading(false)
-    if (ok) {
-      setName('')
-      setEmail('')
-      setPassword('')
-    }
+    if (ok) { setName(''); setEmail(''); setPassword('') }
+  }
+
+  const google = async () => {
+    if (!onGoogle || googleLoading) return
+    setGoogleLoading(true)
+    try { await onGoogle() } finally { setGoogleLoading(false) }
   }
 
   return (
