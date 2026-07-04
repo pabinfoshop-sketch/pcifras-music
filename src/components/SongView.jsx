@@ -89,13 +89,40 @@ export default function SongView({ song, transpose, viewMode, studyMode, current
       </div>
 
       <div className="song-meta-chips">
-        <div className="meta-chip meta-chip-key" title="Tom">
+        <div className="meta-chip meta-chip-key meta-chip-hero" title="Tom da música">
           <span className="meta-chip-label">Tom</span>
-          <span className="meta-chip-value">
+          <span className="meta-chip-value meta-chip-value-lg">
             {transpose !== 0 ? transposeChord(song.key, transpose) : song.key}
           </span>
           {transpose !== 0 && (
             <span className="meta-chip-hint">orig. {song.key}</span>
+          )}
+          {onTranspose && (
+            <span className="transpose-inline" role="group" aria-label="Transpor">
+              <button
+                type="button"
+                className="transpose-btn"
+                onClick={() => onTranspose(-1)}
+                title="Descer meio tom"
+                aria-label="Descer meio tom"
+              >−</button>
+              {transpose !== 0 && (
+                <button
+                  type="button"
+                  className="transpose-btn transpose-reset"
+                  onClick={() => onTranspose(0, true)}
+                  title="Voltar ao tom original"
+                  aria-label="Resetar tom"
+                >{transpose > 0 ? `+${transpose}` : transpose}</button>
+              )}
+              <button
+                type="button"
+                className="transpose-btn"
+                onClick={() => onTranspose(1)}
+                title="Subir meio tom"
+                aria-label="Subir meio tom"
+              >+</button>
+            </span>
           )}
         </div>
         <div className="meta-chip" title="Ritmo">
@@ -115,41 +142,46 @@ export default function SongView({ song, transpose, viewMode, studyMode, current
       </div>
 
       <div className="song-actions">
-        {uniqueChords.length > 0 && (
+        <div className="song-actions-group">
+          {uniqueChords.length > 0 && (
+            <button
+              className={`chord-list-toggle ${showChords ? 'open' : ''}`}
+              onClick={() => setShowChords(p => !p)}
+            >
+              <span className="chord-list-toggle-icon">{showChords ? '▾' : '▸'}</span>
+              <span>🎵 Acordes ({uniqueChords.length})</span>
+            </button>
+          )}
           <button
-            className={`chord-list-toggle ${showChords ? 'open' : ''}`}
-            onClick={() => setShowChords(p => !p)}
+            className={`chord-list-toggle ${simplified ? 'open' : ''}`}
+            onClick={() => setSimplified(p => !p)}
+            title={simplified ? 'Mostrando versão simplificada' : 'Mostrar todos os acordes'}
           >
-            <span className="chord-list-toggle-icon">{showChords ? '▾' : '▸'}</span>
-            <span>🎵 Acordes ({uniqueChords.length})</span>
+            <span className="chord-list-toggle-icon">{simplified ? '✓' : '○'}</span>
+            <span>📝 Simplificada</span>
           </button>
-        )}
-        <button
-          className={`chord-list-toggle ${simplified ? 'open' : ''}`}
-          onClick={() => setSimplified(p => !p)}
-          title={simplified ? 'Mostrando versão simplificada' : 'Mostrar todos os acordes'}
-        >
-          <span className="chord-list-toggle-icon">{simplified ? '✓' : '○'}</span>
-          <span>📝 Simplificada</span>
-        </button>
-        {hasTab && (
+          {hasTab && (
+            <button
+              className={`chord-list-toggle ${hideTab ? 'open' : ''}`}
+              onClick={() => setHideTab(p => !p)}
+              title={hideTab ? 'Mostrar tablatura' : 'Ocultar tablatura'}
+            >
+              <span className="chord-list-toggle-icon">{hideTab ? '✓' : '○'}</span>
+              <span>🎸 Tab</span>
+            </button>
+          )}
+        </div>
+        <div className="song-actions-divider" aria-hidden />
+        <div className="song-actions-group">
           <button
-            className={`chord-list-toggle ${hideTab ? 'open' : ''}`}
-            onClick={() => setHideTab(p => !p)}
-            title={hideTab ? 'Mostrar tablatura' : 'Ocultar tablatura'}
+            className="chord-list-toggle chord-list-toggle-ghost"
+            onClick={() => onExport && onExport()}
+            title="Exportar cifra"
           >
-            <span className="chord-list-toggle-icon">{hideTab ? '✓' : '○'}</span>
-            <span>🎸 Tab</span>
+            <span className="chord-list-toggle-icon">📤</span>
+            <span>Exportar</span>
           </button>
-        )}
-        <button
-          className="chord-list-toggle"
-          onClick={() => onExport && onExport()}
-          title="Exportar cifra"
-        >
-          <span className="chord-list-toggle-icon">📤</span>
-          <span>Exportar</span>
-        </button>
+        </div>
       </div>
 
       {showChords && (
@@ -161,6 +193,7 @@ export default function SongView({ song, transpose, viewMode, studyMode, current
       )}
     </div>
   )
+
 
   const transposeInStr = str =>
     str.replace(/[A-G][#b]?(m|dim|aug|sus|maj|M)?[0-9]*(?:\/[A-G][#b]?)?/g, m => transposeChordStr(m))
