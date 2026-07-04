@@ -796,7 +796,8 @@ export default function App() {
       {(screen === 'songs' || screen === 'setlists') && (
         <div className="sidebar-panel desktop-only">
           <div className="sidebar-header">
-            {screen === 'songs' ? '🎸 songpcmusic' : '📋 Repertórios'}
+            <span>{screen === 'songs' ? '🎸 songpcmusic' : '📋 Repertórios'}</span>
+            {isPremium && <span className="pro-badge" title="Assinante PRO">PRO</span>}
           </div>
           {screen === 'songs' ? (
             <>
