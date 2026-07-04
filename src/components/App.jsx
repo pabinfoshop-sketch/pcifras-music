@@ -1546,6 +1546,16 @@ export default function App() {
           onCancel={() => setConfirmDelete(null)}
         />
       )}
+      {showUpgrade && (
+        <UpgradeModal
+          reason={showUpgrade}
+          onClose={() => setShowUpgrade(null)}
+          onSubscribe={() => {
+            setShowUpgrade(null)
+            showToast('💳 A assinatura estará disponível em breve. Obrigado pelo interesse!')
+          }}
+        />
+      )}
       <Toast message={toast} />
     </div>
     </ErrorBoundary>
