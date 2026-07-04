@@ -4,7 +4,7 @@ export default function AccountScreen({ user, isPremium, onSubscribe, onManage, 
   const trialActive = user.trialEnd && new Date(user.trialEnd).getTime() > Date.now()
   const trialDays = user.trialDays || 0
   const paid = !!user.paidActive
-  const planLabel = paid ? 'PREMIUM' : (trialActive ? 'TESTE GRÁTIS' : 'GRÁTIS')
+  const planLabel = paid ? 'PREMIUM' : (trialActive ? 'TESTE GRATUITO' : 'GRATUITO')
   const planClass = paid ? 'account-plan-pro' : (trialActive ? 'account-plan-trial' : 'account-plan-free')
 
   const handleRestore = onRestore || (() => window.location.reload())
