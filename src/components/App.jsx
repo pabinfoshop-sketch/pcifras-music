@@ -1020,7 +1020,7 @@ export default function App() {
             )}
 
             <div id="content" ref={contentRef} className={viewMode !== '1' ? `view-cols-${viewMode}` : ''}>
-              <SongView key={currentSong.id} song={currentSong} transpose={transpose} viewMode={viewMode} studyMode={studyMode} currentKey={currentKey} onToggleFavorite={handleToggleFavorite} onExport={handleShare} />
+              <SongView key={currentSong.id} song={currentSong} transpose={transpose} viewMode={viewMode} studyMode={studyMode} currentKey={currentKey} onToggleFavorite={handleToggleFavorite} onExport={handleShare} onTranspose={(d, reset) => reset ? setTranspose(0) : setTranspose(p => p + d)} />
             </div>
           </>
         ) : screen === 'setlists' ? (
