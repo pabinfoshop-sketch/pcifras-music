@@ -1,7 +1,7 @@
 {
-  "name": "Pcifras-music — Cifras & Repertórios",
-  "short_name": "Pcifras-music",
-  "description": "Pcifras-music: Cifras, Acordes, Repertórios, Afinador e Metrônomo para violão",
+  "name": "PCifras Music",
+  "short_name": "PCifras",
+  "description": "Cifras, repertórios, afinador e recursos para músicos",
   "start_url": "/",
   "scope": "/",
   "id": "/",
