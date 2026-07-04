@@ -27,12 +27,20 @@ export default function AuthScreen({ onAuth, onGoogle }) {
       <div className="auth-screen-card">
         <div className="auth-screen-brand">
           <div className="auth-screen-logo">🎸</div>
+          <div className="auth-screen-eyebrow">O app do músico moderno</div>
           <h1 className="auth-screen-title">PCifras Music</h1>
           <p className="auth-screen-sub">
             {mode === 'login'
-              ? 'Entre e acesse seu repertório'
-              : 'Crie sua conta gratuita e comece agora'}
+              ? 'Acesse suas cifras e repertórios de qualquer lugar'
+              : 'Crie sua conta grátis e comece em segundos'}
           </p>
+          {mode === 'register' && (
+            <ul className="auth-benefits-row">
+              <li><span>☁️</span>Backup na nuvem</li>
+              <li><span>🎼</span>Repertórios</li>
+              <li><span>🎤</span>Modo palco</li>
+            </ul>
+          )}
         </div>
 
         <button type="button" className="auth-google-btn" onClick={google} disabled={googleLoading}>
