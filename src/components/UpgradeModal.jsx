@@ -52,8 +52,8 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
         <div className="premium-trial">
           <div className="premium-trial-badge">7 DIAS GRÁTIS</div>
           <div className="premium-trial-text">
-            <strong>Teste tudo sem pagar nada.</strong>
-            <span>Sem cartão de crédito. Cancele quando quiser.</span>
+            <strong>Experimente tudo, sem pagar nada.</strong>
+            <span>Sem cartão de crédito. Cancele a qualquer momento.</span>
           </div>
         </div>
 
@@ -78,9 +78,9 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
                 <span className="premium-amount">19,90</span>
                 <span className="premium-period">/mês</span>
               </div>
-              <div className="premium-price-note">Ou economize com o plano anual</div>
+              <div className="premium-price-note">Economize ainda mais no plano anual</div>
             </div>
-            <div className="premium-price-tag">Mais popular</div>
+            <div className="premium-price-tag">Mais escolhido</div>
           </div>
 
           <button className="premium-cta" onClick={onSubscribe}>
@@ -88,7 +88,7 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
           </button>
 
           <div className="premium-trust">
-            <span>🔒 Cobrança segura</span>
+            <span>🔒 Pagamento seguro</span>
             <span>·</span>
             <span>⚡ Acesso imediato</span>
             <span>·</span>
@@ -97,7 +97,7 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
         </div>
 
         <button className="premium-later" onClick={onClose}>
-          Continuar no plano grátis
+          Continuar no plano gratuito
         </button>
       </div>
     </div>
