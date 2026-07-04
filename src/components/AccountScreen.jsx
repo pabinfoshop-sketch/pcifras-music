@@ -80,7 +80,7 @@ export default function AccountScreen({ user, isPremium, onSubscribe, onManage, 
             <section className="account-card account-benefits-card">
               <div className="account-section-head">
                 <span className="account-section-eyebrow">Premium</span>
-                <h3 className="account-section-title">Por que assinar?</h3>
+                <h3 className="account-section-title">Tudo o que você ganha</h3>
               </div>
               <ul className="account-benefits">
                 {benefits.map(b => (
