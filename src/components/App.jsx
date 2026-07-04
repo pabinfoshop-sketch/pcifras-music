@@ -1147,9 +1147,17 @@ export default function App() {
 
               ) : (
                 <>
+                  <PremiumStatusStrip
+                    isPremium={isPremium}
+                    authUser={authUser}
+                    songCount={songs.length}
+                    songLimit={FREE_SONG_LIMIT}
+                    onUpgrade={() => setShowUpgrade('generic')}
+                    onSignup={() => { setShowAuth(true); setAuthMode('register') }}
+                  />
                   <div className="search-bar">
                     <span className="search-bar-icon">🔍</span>
-                    <input placeholder="Filtrar músicas..." value={filter} onChange={e => setFilter(e.target.value)} />
+                    <input placeholder="Buscar por título ou artista" value={filter} onChange={e => setFilter(e.target.value)} />
                     <button
                       className={`fav-filter-btn ${showFavorites ? 'active' : ''}`}
                       onClick={() => setShowFavorites(v => !v)}
@@ -1168,7 +1176,7 @@ export default function App() {
                   )}
                   <div className="song-list">
                     {filtered.length === 0 ? (
-                      <div className="empty-list">Nenhuma música encontrada.<br />Tente outro nome ou limpe o filtro.</div>
+                      <div className="empty-list">Nenhuma música encontrada.<br />Ajuste a busca ou limpe o filtro.</div>
                     ) : (
                       filtered.map(s => (
                         <div key={s.id} className={`song-card${currentSong?.id === s.id ? ' active' : ''}`}>
@@ -1177,10 +1185,17 @@ export default function App() {
                         {s.artist && <div className="song-card-artist">{s.artist}</div>}
                       </div>
                       <span className="song-card-key">{s.key}</span>
-                          <button className="song-card-del" onClick={e => { e.stopPropagation(); setAddToSetlistSong(s) }}>📋</button>
-                          <button className="song-card-del" onClick={e => { e.stopPropagation(); handleDelete(s) }}>🗑</button>
+                          <button className="song-card-del" onClick={e => { e.stopPropagation(); setAddToSetlistSong(s) }} title="Adicionar a repertório">📋</button>
+                          <button className="song-card-del" onClick={e => { e.stopPropagation(); handleDelete(s) }} title="Remover">🗑</button>
                         </div>
                       ))
+                    )}
+                    {!isPremium && filtered.length > 0 && songs.length >= Math.max(2, FREE_SONG_LIMIT - 2) && (
+                      <PremiumTeaserCard
+                        atLimit={songs.length >= FREE_SONG_LIMIT}
+                        remaining={Math.max(0, FREE_SONG_LIMIT - songs.length)}
+                        onUpgrade={() => setShowUpgrade(songs.length >= FREE_SONG_LIMIT ? 'songs' : 'generic')}
+                      />
                     )}
                   </div>
                 </>
@@ -1860,3 +1875,58 @@ function MobileSetlistList({ setlists, isPremium, onSelect, onCreate, onDuplicat
   )
 }
 
+
+function PremiumStatusStrip({ isPremium, authUser, songCount, songLimit, onUpgrade, onSignup }) {
+  if (isPremium && !(authUser?.trialEnd && !authUser?.premiumSince)) {
+    return null
+  }
+  const inTrial = authUser?.trialEnd && !authUser?.premiumSince
+  const trialDays = authUser?.trialDays || 0
+  const guest = !authUser
+
+  if (inTrial) {
+    return (
+      <div className="premium-strip premium-strip-trial" role="status">
+        <span className="premium-strip-icon" aria-hidden="true">🎉</span>
+        <span className="premium-strip-text">
+          <strong>{trialDays} {trialDays === 1 ? 'dia restante' : 'dias restantes'}</strong> do seu período de teste
+        </span>
+        <button className="premium-strip-cta" onClick={onUpgrade}>Assinar</button>
+      </div>
+    )
+  }
+
+  const nearLimit = songCount >= songLimit - 1
+  return (
+    <div className="premium-strip" role="status">
+      <span className="premium-strip-icon" aria-hidden="true">👑</span>
+      <span className="premium-strip-text">
+        {guest
+          ? <><strong>7 dias grátis</strong> de Premium — sem cartão de crédito</>
+          : nearLimit
+            ? <><strong>{songCount}/{songLimit} músicas grátis</strong> — libere ilimitadas no Premium</>
+            : <><strong>Turbine seu preparo</strong> — Premium com backup, sync e ferramentas de palco</>}
+      </span>
+      <button className="premium-strip-cta" onClick={guest ? onSignup : onUpgrade}>
+        {guest ? 'Começar grátis' : 'Ver Premium'}
+      </button>
+    </div>
+  )
+}
+
+function PremiumTeaserCard({ atLimit, remaining, onUpgrade }) {
+  return (
+    <button className="premium-teaser-card" onClick={onUpgrade} type="button">
+      <div className="premium-teaser-badge">👑 Premium</div>
+      <div className="premium-teaser-title">
+        {atLimit
+          ? 'Você chegou ao limite do plano gratuito'
+          : `Só faltam ${remaining} ${remaining === 1 ? 'música' : 'músicas'} no plano gratuito`}
+      </div>
+      <div className="premium-teaser-sub">
+        Assine e tenha músicas e repertórios ilimitados, backup na nuvem e ferramentas de palco.
+      </div>
+      <div className="premium-teaser-cta">Ver planos ›</div>
+    </button>
+  )
+}
