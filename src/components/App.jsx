@@ -13,6 +13,7 @@ import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
+import { loadCloudSongs, upsertCloudSong, deleteCloudSong } from '@/lib/cloudSongs'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
