@@ -1595,12 +1595,31 @@ export default function App() {
   )
 }
 
+function EmptySetlist({ onCreate }) {
+  return (
+    <div className="empty-state">
+      <div className="empty-state-illustration" aria-hidden="true">
+        <div className="empty-state-circle">📋</div>
+        <span className="empty-state-note note-1">♪</span>
+        <span className="empty-state-note note-2">♫</span>
+        <span className="empty-state-note note-3">♩</span>
+      </div>
+      <h3 className="empty-state-title">Nenhum repertório ainda</h3>
+      <p className="empty-state-text">
+        Organize suas músicas por ensaios, shows ou culto.<br />
+        Crie seu primeiro repertório em segundos.
+      </p>
+      <button className="empty-state-cta" onClick={onCreate}>+ Criar repertório</button>
+    </div>
+  )
+}
+
 function SetlistList({ setlists, onSelect, onCreate }) {
   return (
     <div className="sidebar-songs">
       <button className="sidebar-add-btn" onClick={onCreate}>+ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Nenhum repertório por aqui.<br />Crie um para organizar suas músicas.</div>
+        <EmptySetlist onCreate={onCreate} />
       ) : (
         setlists.map(sl => (
           <div key={sl.id} className="song-card" onClick={() => onSelect(sl)}>
@@ -1621,7 +1640,7 @@ function MobileSetlistList({ setlists, onSelect, onCreate }) {
     <div>
       <button className="msearch-btn" style={{width:'100%',marginBottom:12}} onClick={onCreate}>+ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Você ainda não tem repertórios.<br />Crie um para organizar suas músicas.</div>
+        <EmptySetlist onCreate={onCreate} />
       ) : (
         <div className="song-list">
           {setlists.map(sl => (
