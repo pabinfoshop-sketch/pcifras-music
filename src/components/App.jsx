@@ -1080,6 +1080,16 @@ export default function App() {
               )}
             </div>
           </>
+        ) : screen === 'tools' ? (
+          <ToolsScreen
+            isPremium={isPremium}
+            onBack={() => setScreen('songs')}
+            onOpenTuner={() => setShowTuner(true)}
+            onOpenMetronome={() => showToast('Abra qualquer música para usar o metrônomo.')}
+            onOpenStrum={() => showToast('Abra qualquer música para usar a barra de batida.')}
+            onCloudSync={handleCloudSync}
+            onUpgrade={(reason) => setShowUpgrade(reason || 'generic')}
+          />
         ) : screen === 'account' && authUser ? (
           <AccountScreen
             user={authUser}
