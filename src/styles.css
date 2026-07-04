@@ -4154,3 +4154,65 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .auth-screen-card{ padding:24px 20px; border-radius:18px; }
   .auth-screen-title{ font-size:1.35rem; }
 }
+
+/* ===== Upgrade Modal ===== */
+.upgrade-modal{
+  position:relative;
+  background:linear-gradient(160deg,#141821 0%,#1a2030 100%);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:22px;
+  padding:32px 26px 24px;
+  max-width:720px; width:calc(100% - 32px);
+  max-height:92vh; overflow-y:auto;
+  color:#f2f4f8;
+  box-shadow:0 24px 80px rgba(0,0,0,0.55);
+}
+.upgrade-close{ position:absolute; top:14px; right:14px; }
+.upgrade-crown{ font-size:2.4rem; text-align:center; margin-bottom:6px; }
+.upgrade-title{ font-size:1.5rem; text-align:center; margin:0 0 8px; font-weight:700; }
+.upgrade-desc{ text-align:center; color:#a8b0c0; margin:0 auto 22px; max-width:480px; font-size:0.95rem; line-height:1.5; }
+.upgrade-plans{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+.upgrade-plan{
+  position:relative;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:20px 18px;
+  display:flex; flex-direction:column;
+}
+.upgrade-plan-pro{
+  background:linear-gradient(160deg,rgba(255,193,7,0.10),rgba(255,87,34,0.08));
+  border-color:rgba(255,193,7,0.35);
+  box-shadow:0 8px 30px rgba(255,152,0,0.15);
+}
+.upgrade-badge{
+  position:absolute; top:-10px; right:14px;
+  background:linear-gradient(90deg,#ffc107,#ff8a00);
+  color:#1a1a1a; font-size:0.7rem; font-weight:700;
+  padding:4px 10px; border-radius:999px; letter-spacing:0.3px;
+}
+.upgrade-plan-name{ font-size:0.85rem; letter-spacing:1.5px; color:#8a94a7; font-weight:700; text-transform:uppercase; }
+.upgrade-plan-price{ font-size:1.8rem; font-weight:800; margin:6px 0 14px; }
+.upgrade-plan-price span{ font-size:0.85rem; font-weight:500; color:#8a94a7; margin-left:2px; }
+.upgrade-features{ list-style:none; padding:0; margin:0 0 16px; display:flex; flex-direction:column; gap:8px; font-size:0.9rem; color:#d8dde8; }
+.upgrade-features .dim{ color:#5a6273; }
+.upgrade-plan-tag{ font-size:0.75rem; color:#8a94a7; text-align:center; margin-top:auto; padding-top:8px; }
+.upgrade-cta{
+  margin-top:auto;
+  background:linear-gradient(90deg,#ffc107,#ff8a00);
+  color:#1a1a1a; font-weight:700; font-size:0.95rem;
+  border:none; border-radius:10px; padding:12px;
+  cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;
+}
+.upgrade-cta:hover{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(255,152,0,0.35); }
+.upgrade-note{ font-size:0.72rem; color:#8a94a7; text-align:center; margin-top:8px; }
+.upgrade-later{
+  display:block; margin:0 auto;
+  background:transparent; border:none; color:#8a94a7;
+  font-size:0.88rem; cursor:pointer; padding:8px 14px;
+}
+.upgrade-later:hover{ color:#d8dde8; }
+@media (max-width:560px){
+  .upgrade-plans{ grid-template-columns:1fr; }
+  .upgrade-modal{ padding:24px 18px 18px; }
+}

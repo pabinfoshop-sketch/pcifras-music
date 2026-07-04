@@ -8,6 +8,7 @@ import Tuner from './Tuner'
 import YouTubePlayer from './YouTubePlayer'
 import AuthModal from './AuthModal'
 import AuthScreen from './AuthScreen'
+import UpgradeModal from './UpgradeModal'
 import ErrorBoundary from './ErrorBoundary'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
@@ -40,6 +41,8 @@ function profileToUser(profile, sessionUser) {
 
 const STORE_KEY = 'cifras_app_songs'
 const SETLISTS_KEY = 'cifras_setlists'
+const FREE_SONG_LIMIT = 5
+const FREE_SETLIST_LIMIT = 1
 
 // Configuração de apoio ao projeto — edite estes valores para os seus links reais
 const SUPPORT_PIX_KEY = 'apoio@pcifrasmusic.com'
@@ -91,6 +94,7 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(null) // 'songs' | 'setlists' | 'generic' | null
   const isPremium = !!authUser?.premium
   const openSupport = useCallback(() => {
     setShowSupport(true)
@@ -332,6 +336,11 @@ export default function App() {
   }, [])
 
   const handleAdd = useCallback(async song => {
+    if (!isPremium && songs.length >= FREE_SONG_LIMIT) {
+      setShowModal(false)
+      setShowUpgrade('songs')
+      return
+    }
     setShowModal(false)
     let toStore = song
     if (authUser?.id) {
@@ -344,7 +353,7 @@ export default function App() {
     setBpm(toStore.bpm || 80)
     setScreen('view')
     setTimeout(() => showToast('Música salva no seu repertório'), 100)
-  }, [authUser, setSongs, showToast])
+  }, [authUser, isPremium, songs.length, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
     setConfirmDelete(song)
@@ -540,18 +549,27 @@ export default function App() {
   }, [toggleMetro, toggleFullscreen, toggleAutoScroll, autoScroll])
 
   const startCreateSetlist = useCallback(() => {
+    if (!isPremium && setlists.length >= FREE_SETLIST_LIMIT) {
+      setShowUpgrade('setlists')
+      return
+    }
     setCreateSetlistName('')
     setShowCreateSetlist(true)
-  }, [])
+  }, [isPremium, setlists.length])
 
   const createSetlistConfirm = useCallback(() => {
     const name = createSetlistName.trim()
     if (!name) return
+    if (!isPremium && setlists.length >= FREE_SETLIST_LIMIT) {
+      setShowCreateSetlist(false)
+      setShowUpgrade('setlists')
+      return
+    }
     setSetlists(prev => [...prev, { id: Date.now(), name, songIds: [] }])
     setShowCreateSetlist(false)
     setCreateSetlistName('')
     showToast(`Repertório "${name}" criado`)
-  }, [createSetlistName, setSetlists, showToast])
+  }, [createSetlistName, isPremium, setlists.length, setSetlists, showToast])
 
   const createSetlist = startCreateSetlist
 
@@ -1526,6 +1544,16 @@ export default function App() {
           subMessage={`"${confirmDelete.title}" será removida do seu repertório. Esta ação não pode ser desfeita.`}
           onConfirm={confirmDeleteSong}
           onCancel={() => setConfirmDelete(null)}
+        />
+      )}
+      {showUpgrade && (
+        <UpgradeModal
+          reason={showUpgrade}
+          onClose={() => setShowUpgrade(null)}
+          onSubscribe={() => {
+            setShowUpgrade(null)
+            showToast('💳 A assinatura estará disponível em breve. Obrigado pelo interesse!')
+          }}
         />
       )}
       <Toast message={toast} />
