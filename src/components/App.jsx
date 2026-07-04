@@ -354,15 +354,22 @@ export default function App() {
     setShowModal(false)
     let toStore = song
     if (authUser?.id) {
-      const newId = await upsertCloudSong(authUser.id, song)
-      if (newId && newId !== song.id) toStore = { ...song, id: newId }
+      setSavingSong(true)
+      try {
+        const newId = await upsertCloudSong(authUser.id, song)
+        if (newId && newId !== song.id) toStore = { ...song, id: newId }
+      } catch (e) {
+        showToast('Não foi possível salvar na nuvem. Salvamos localmente por enquanto.')
+      } finally {
+        setSavingSong(false)
+      }
     }
     setSongs(prev => [...prev, toStore])
     setCurrentSong(toStore)
     setTranspose(0)
     setBpm(toStore.bpm || 80)
     setScreen('view')
-    setTimeout(() => showToast('Música salva no seu repertório'), 100)
+    setTimeout(() => showToast('✓ Música salva no seu repertório'), 100)
   }, [authUser, isPremium, songs.length, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
@@ -373,22 +380,26 @@ export default function App() {
     setSongs(prev => {
       const next = prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s)
       const updated = next.find(s => s.id === id)
-      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated)
+      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated).catch(() => {})
       return next
     })
   }, [authUser, setSongs])
 
-  const confirmDeleteSong = useCallback(() => {
+  const confirmDeleteSong = useCallback(async () => {
     if (!confirmDelete) return
-    if (authUser?.id) deleteCloudSong(authUser.id, confirmDelete.id)
-    setSongs(prev => prev.filter(s => s.id !== confirmDelete.id))
-    if (currentSong?.id === confirmDelete.id) {
-      const remaining = songs.filter(s => s.id !== confirmDelete.id)
+    const target = confirmDelete
+    setConfirmDelete(null)
+    if (authUser?.id) {
+      try { await deleteCloudSong(authUser.id, target.id) }
+      catch { showToast('Não foi possível remover da nuvem. Tente novamente.'); return }
+    }
+    setSongs(prev => prev.filter(s => s.id !== target.id))
+    if (currentSong?.id === target.id) {
+      const remaining = songs.filter(s => s.id !== target.id)
       setCurrentSong(remaining.length > 0 ? remaining[0] : null)
       if (remaining.length === 0) setScreen('songs')
     }
-    setConfirmDelete(null)
-    showToast('Música removida do seu repertório')
+    showToast('🗑 Música removida do seu repertório')
   }, [authUser, confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
