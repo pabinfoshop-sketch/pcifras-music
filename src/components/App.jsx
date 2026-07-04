@@ -1147,9 +1147,17 @@ export default function App() {
 
               ) : (
                 <>
+                  <PremiumStatusStrip
+                    isPremium={isPremium}
+                    authUser={authUser}
+                    songCount={songs.length}
+                    songLimit={FREE_SONG_LIMIT}
+                    onUpgrade={() => setShowUpgrade('generic')}
+                    onSignup={() => { setShowAuth(true); setAuthMode('register') }}
+                  />
                   <div className="search-bar">
                     <span className="search-bar-icon">🔍</span>
-                    <input placeholder="Filtrar músicas..." value={filter} onChange={e => setFilter(e.target.value)} />
+                    <input placeholder="Buscar por título ou artista" value={filter} onChange={e => setFilter(e.target.value)} />
                     <button
                       className={`fav-filter-btn ${showFavorites ? 'active' : ''}`}
                       onClick={() => setShowFavorites(v => !v)}
@@ -1168,7 +1176,7 @@ export default function App() {
                   )}
                   <div className="song-list">
                     {filtered.length === 0 ? (
-                      <div className="empty-list">Nenhuma música encontrada.<br />Tente outro nome ou limpe o filtro.</div>
+                      <div className="empty-list">Nenhuma música encontrada.<br />Ajuste a busca ou limpe o filtro.</div>
                     ) : (
                       filtered.map(s => (
                         <div key={s.id} className={`song-card${currentSong?.id === s.id ? ' active' : ''}`}>
@@ -1177,10 +1185,17 @@ export default function App() {
                         {s.artist && <div className="song-card-artist">{s.artist}</div>}
                       </div>
                       <span className="song-card-key">{s.key}</span>
-                          <button className="song-card-del" onClick={e => { e.stopPropagation(); setAddToSetlistSong(s) }}>📋</button>
-                          <button className="song-card-del" onClick={e => { e.stopPropagation(); handleDelete(s) }}>🗑</button>
+                          <button className="song-card-del" onClick={e => { e.stopPropagation(); setAddToSetlistSong(s) }} title="Adicionar a repertório">📋</button>
+                          <button className="song-card-del" onClick={e => { e.stopPropagation(); handleDelete(s) }} title="Remover">🗑</button>
                         </div>
                       ))
+                    )}
+                    {!isPremium && filtered.length > 0 && songs.length >= Math.max(2, FREE_SONG_LIMIT - 2) && (
+                      <PremiumTeaserCard
+                        atLimit={songs.length >= FREE_SONG_LIMIT}
+                        remaining={Math.max(0, FREE_SONG_LIMIT - songs.length)}
+                        onUpgrade={() => setShowUpgrade(songs.length >= FREE_SONG_LIMIT ? 'songs' : 'generic')}
+                      />
                     )}
                   </div>
                 </>
