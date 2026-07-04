@@ -7,10 +7,12 @@ import StrumBar from './StrumBar'
 import Tuner from './Tuner'
 import YouTubePlayer from './YouTubePlayer'
 import AuthModal from './AuthModal'
+import AuthScreen from './AuthScreen'
 import ErrorBoundary from './ErrorBoundary'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
+import { lovable } from '@/integrations/lovable'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
