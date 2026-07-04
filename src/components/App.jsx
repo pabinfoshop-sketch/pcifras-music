@@ -62,6 +62,8 @@ export default function App() {
   const [showModal, setShowModal] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [toast, setToast] = useState('')
+  const [loadingCloud, setLoadingCloud] = useState(false)
+  const [savingSong, setSavingSong] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeStep, setActiveStep] = useState(-1)
   const [bpm, setBpm] = useState(80)
@@ -285,24 +287,30 @@ export default function App() {
   useEffect(() => {
     if (!authUser?.id) return
     let cancelled = false
+    setLoadingCloud(true)
     ;(async () => {
-      const cloud = await loadCloudSongs(authUser.id)
-      if (cancelled) return
-      setSongs(prev => {
-        const byId = new Map()
-        cloud.forEach(s => byId.set(s.id, s))
-        // Migra músicas locais ainda não sincronizadas
-        prev.forEach(s => {
-          if (!byId.has(s.id)) {
-            byId.set(s.id, s)
-            upsertCloudSong(authUser.id, s)
-          }
+      try {
+        const cloud = await loadCloudSongs(authUser.id)
+        if (cancelled) return
+        setSongs(prev => {
+          const byId = new Map()
+          cloud.forEach(s => byId.set(s.id, s))
+          prev.forEach(s => {
+            if (!byId.has(s.id)) {
+              byId.set(s.id, s)
+              upsertCloudSong(authUser.id, s).catch(() => {})
+            }
+          })
+          return Array.from(byId.values())
         })
-        return Array.from(byId.values())
-      })
+      } catch (e) {
+        if (!cancelled) showToast('Não conseguimos carregar suas músicas da nuvem. Tente novamente.')
+      } finally {
+        if (!cancelled) setLoadingCloud(false)
+      }
     })()
     return () => { cancelled = true }
-  }, [authUser?.id, setSongs])
+  }, [authUser?.id, setSongs, showToast])
 
   const handleGoogleLogin = useCallback(async () => {
     try {
