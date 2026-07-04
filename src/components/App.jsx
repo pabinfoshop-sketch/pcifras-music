@@ -1198,7 +1198,7 @@ export default function App() {
       </footer>
 
 
-      {showModal && <Modal onAdd={handleAdd} onClose={() => setShowModal(false)} />}
+      {showModal && <Modal initialTab={modalInitialTab} onAdd={handleAdd} onClose={() => setShowModal(false)} />}
 
       {showEditor && currentSong && (
         <div className="modal-bg" onClick={() => setShowEditor(false)}>
