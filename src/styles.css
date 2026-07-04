@@ -4216,3 +4216,53 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .upgrade-plans{ grid-template-columns:1fr; }
   .upgrade-modal{ padding:24px 18px 18px; }
 }
+
+/* ===== Account Screen ===== */
+.account-screen-content{ padding:20px 16px 40px; display:flex; justify-content:center; }
+.account-card{
+  width:100%; max-width:520px;
+  background:linear-gradient(160deg,#141821 0%,#1a2030 100%);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  padding:26px 22px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+.account-header{ display:flex; align-items:center; gap:16px; margin-bottom:22px; }
+.account-avatar{
+  width:64px; height:64px; border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff; font-size:1.6rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 18px rgba(59,130,246,0.35);
+}
+.account-identity{ flex:1; min-width:0; }
+.account-name{ font-size:1.15rem; font-weight:700; color:#f2f4f8; margin-bottom:2px; }
+.account-email{ font-size:0.85rem; color:#8a94a7; overflow:hidden; text-overflow:ellipsis; }
+.account-plan{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px; padding:16px; margin-bottom:20px;
+}
+.account-plan-pro{ background:linear-gradient(160deg,rgba(255,193,7,0.12),rgba(255,87,34,0.08)); border-color:rgba(255,193,7,0.35); }
+.account-plan-trial{ background:linear-gradient(160deg,rgba(59,130,246,0.10),rgba(139,92,246,0.08)); border-color:rgba(139,92,246,0.30); }
+.account-plan-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.account-plan-label{ font-size:0.78rem; letter-spacing:1px; color:#8a94a7; text-transform:uppercase; font-weight:600; }
+.account-plan-badge{
+  font-size:0.9rem; font-weight:700; padding:4px 12px; border-radius:999px;
+  background:rgba(255,255,255,0.08); color:#f2f4f8;
+}
+.account-plan-pro .account-plan-badge{ background:linear-gradient(90deg,#ffc107,#ff8a00); color:#1a1a1a; }
+.account-plan-trial .account-plan-badge{ background:linear-gradient(90deg,#3b82f6,#8b5cf6); color:#fff; }
+.account-plan-desc{ font-size:0.88rem; color:#c4cad6; margin:6px 0 0; line-height:1.4; }
+.account-trial-info{ display:flex; align-items:center; gap:10px; margin-top:6px; font-size:0.92rem; color:#e8ecf5; }
+.account-trial-icon{ font-size:1.3rem; }
+.account-actions{ display:flex; flex-direction:column; gap:10px; }
+.account-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px; border-radius:12px; font-size:0.98rem; font-weight:600;
+  border:none; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.account-btn-primary{ background:linear-gradient(90deg,#ffc107,#ff8a00); color:#1a1a1a; }
+.account-btn-primary:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(255,152,0,0.30); }
+.account-btn-ghost{ background:rgba(255,255,255,0.04); color:#d8dde8; border:1px solid rgba(255,255,255,0.08); }
+.account-btn-ghost:hover{ background:rgba(255,255,255,0.08); }
