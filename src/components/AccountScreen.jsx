@@ -108,8 +108,8 @@ export default function AccountScreen({ user, isPremium, onSubscribe, onManage, 
                 <button className="account-list-item" onClick={handleRestore}>
                   <span className="ali-ico">🔄</span>
                   <span className="ali-text">
-                    <strong>Restaurar conta</strong>
-                    <span>Sincronize compras e dados</span>
+                    <strong>Restaurar assinatura</strong>
+                    <span>Recupere compras e dados da nuvem</span>
                   </span>
                   <span className="ali-chev">›</span>
                 </button>
