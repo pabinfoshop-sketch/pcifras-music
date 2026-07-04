@@ -7,10 +7,12 @@ import StrumBar from './StrumBar'
 import Tuner from './Tuner'
 import YouTubePlayer from './YouTubePlayer'
 import AuthModal from './AuthModal'
+import AuthScreen from './AuthScreen'
 import ErrorBoundary from './ErrorBoundary'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
+import { lovable } from '@/integrations/lovable'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
@@ -84,6 +86,7 @@ export default function App() {
   const [showPremium, setShowPremium] = useState(false)
   
   const [authUser, setAuthUser] = useLocalStorage('cifras_user', null)
+  const [authLoading, setAuthLoading] = useState(true)
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
@@ -258,10 +261,11 @@ export default function App() {
   // Session bootstrap + reactive updates from Supabase auth.
   useEffect(() => {
     let mounted = true
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return
-      if (data.session?.user) refreshProfile(data.session.user)
+      if (data.session?.user) await refreshProfile(data.session.user)
       else setAuthUser(null)
+      if (mounted) setAuthLoading(false)
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') { setAuthUser(null); return }
@@ -269,6 +273,30 @@ export default function App() {
     })
     return () => { mounted = false; sub.subscription.unsubscribe() }
   }, [refreshProfile, setAuthUser])
+
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
+      })
+      if (result?.error) {
+        showToast(result.error.message || 'Não foi possível entrar com Google.')
+        return false
+      }
+      if (result?.redirected) return true
+      // Popup flow: session set by the helper; refresh profile.
+      const { data } = await supabase.auth.getSession()
+      if (data.session?.user) {
+        await refreshProfile(data.session.user)
+        setShowAuth(false)
+        showToast('Bem-vindo!')
+      }
+      return true
+    } catch (e) {
+      showToast(e?.message || 'Falha no login com Google.')
+      return false
+    }
+  }, [refreshProfile, showToast])
 
 
   const handleSelect = useCallback(song => {
@@ -665,6 +693,24 @@ export default function App() {
     setShowEditor(false)
     showToast('Cifra atualizada!')
   }, [currentSong, editRawText, editOriginalUrl, editPlaybackUrl, setSongs, showToast])
+
+  if (authLoading) {
+    return (
+      <div className="auth-screen"><div className="auth-screen-card" style={{textAlign:'center'}}>
+        <div className="auth-screen-logo">🎸</div>
+        <p className="auth-screen-sub">Carregando sua sessão…</p>
+      </div></div>
+    )
+  }
+
+  if (!authUser) {
+    return (
+      <>
+        <AuthScreen onAuth={handleAuth} onGoogle={handleGoogleLogin} />
+        <Toast message={toast} />
+      </>
+    )
+  }
 
   return (
     <ErrorBoundary>
@@ -1435,7 +1481,7 @@ export default function App() {
         </div>
       )}
 
-      {showAuth && <AuthModal mode={authMode} setMode={setAuthMode} onAuth={handleAuth} onClose={() => setShowAuth(false)} />}
+      {showAuth && <AuthModal mode={authMode} setMode={setAuthMode} onAuth={handleAuth} onGoogle={handleGoogleLogin} onClose={() => setShowAuth(false)} />}
 
       {confirmDelete && (
         <ConfirmDialog
