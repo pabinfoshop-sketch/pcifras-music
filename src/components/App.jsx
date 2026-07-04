@@ -1035,6 +1035,15 @@ export default function App() {
               )}
             </div>
           </>
+        ) : screen === 'account' && authUser ? (
+          <AccountScreen
+            user={authUser}
+            isPremium={isPremium}
+            onBack={() => setScreen('songs')}
+            onSubscribe={() => setShowUpgrade('generic')}
+            onManage={() => showToast('O portal de gerenciamento estará disponível quando a assinatura for ativada.')}
+            onLogout={() => { handleLogout(); setScreen('songs') }}
+          />
         ) : (
           <>
             <div className="topbar">
