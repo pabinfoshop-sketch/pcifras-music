@@ -845,8 +845,12 @@ export default function App() {
           ) : (
             <SetlistList
               setlists={setlists}
+              isPremium={isPremium}
               onSelect={sl => { setActiveSetlist(sl); setScreen('setlist-view') }}
               onCreate={createSetlist}
+              onDuplicate={duplicateSetlist}
+              onDelete={deleteSetlist}
+              onUpgrade={() => setShowUpgrade('generic')}
             />
           )}
           <div className="sidebar-footer">
