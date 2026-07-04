@@ -549,18 +549,27 @@ export default function App() {
   }, [toggleMetro, toggleFullscreen, toggleAutoScroll, autoScroll])
 
   const startCreateSetlist = useCallback(() => {
+    if (!isPremium && setlists.length >= FREE_SETLIST_LIMIT) {
+      setShowUpgrade('setlists')
+      return
+    }
     setCreateSetlistName('')
     setShowCreateSetlist(true)
-  }, [])
+  }, [isPremium, setlists.length])
 
   const createSetlistConfirm = useCallback(() => {
     const name = createSetlistName.trim()
     if (!name) return
+    if (!isPremium && setlists.length >= FREE_SETLIST_LIMIT) {
+      setShowCreateSetlist(false)
+      setShowUpgrade('setlists')
+      return
+    }
     setSetlists(prev => [...prev, { id: Date.now(), name, songIds: [] }])
     setShowCreateSetlist(false)
     setCreateSetlistName('')
     showToast(`Repertório "${name}" criado`)
-  }, [createSetlistName, setSetlists, showToast])
+  }, [createSetlistName, isPremium, setlists.length, setSetlists, showToast])
 
   const createSetlist = startCreateSetlist
 
