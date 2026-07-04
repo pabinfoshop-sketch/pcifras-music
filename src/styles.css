@@ -5832,3 +5832,216 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   margin-top: 4px; font-size: .82rem; font-weight: 700;
   color: #f5c451;
 }
+
+/* ============================================================
+   PREMIUM POLISH v2 — refino final para percepção de app pago
+   Aplicado por cima do sistema existente (não substitui tokens).
+   ============================================================ */
+:root{
+  --shadow-xs: 0 1px 0 rgba(255,255,255,0.03) inset, 0 1px 2px rgba(0,0,0,0.35);
+  --ring-soft: 0 0 0 1px rgba(255,255,255,0.06);
+  --ring-accent: 0 0 0 1px rgba(167,139,250,0.35), 0 0 0 4px rgba(167,139,250,0.12);
+  --gradient-gold: linear-gradient(90deg,#f6d17a 0%,#f4c542 45%,#e8a63a 100%);
+  --gradient-card: linear-gradient(180deg,
+    color-mix(in oklab, var(--surface) 96%, white 4%),
+    color-mix(in oklab, var(--surface) 100%, black 3%));
+}
+
+/* Tipografia mais firme */
+body{ letter-spacing: -0.011em; }
+h1,h2,.stitle,.topbar-title,.welcome h2{ letter-spacing:-0.02em; }
+
+/* Song cards — hierarquia mais clara */
+.song-card{
+  background: var(--gradient-card);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  transition: transform .15s ease, border-color .15s ease, box-shadow .2s ease, background .2s ease;
+}
+.song-card:hover{ border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+.song-card.active{
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent), var(--shadow-md);
+}
+.song-card-name{ font-size: .98rem; }
+.song-card-artist{ font-size: .8rem; color: var(--text-muted); }
+.song-card-key{
+  font-family: var(--font-display);
+  font-weight: 700; font-size: .78rem;
+  padding: 4px 10px; border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  color: #d9ccff;
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+/* Welcome / empty state — mais premium */
+.welcome{ padding-inline: 20px; }
+.welcome h2{ font-weight: 800; }
+.welcome p{ color: var(--text-dim); font-size: .95rem; line-height: 1.55; max-width: 36ch; margin-inline:auto; }
+.welcome-btn-primary,
+.empty-state-cta{
+  background: var(--gradient-primary);
+  border-radius: 14px;
+  padding: 14px 22px;
+  font-weight: 700;
+  letter-spacing:.005em;
+  box-shadow: 0 10px 24px -8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.welcome-hint{ color: var(--text-muted); font-size:.8rem; }
+
+.empty-state{ padding: 40px 20px; }
+.empty-state-title{ font-family: var(--font-display); font-weight: 800; letter-spacing:-.02em; }
+.empty-state-text{ color: var(--text-dim); max-width: 34ch; margin-inline:auto; line-height: 1.55; }
+
+/* Song header (tela da cifra) — leitura de palco */
+.song-header-v2{
+  border-radius: 18px;
+  border:1px solid var(--border);
+  background:
+    radial-gradient(600px 200px at 0% 0%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 60%),
+    var(--gradient-card);
+  box-shadow: var(--shadow-md);
+}
+.song-header-v2 .stitle{ font-weight: 800; line-height: 1.1; }
+.song-header-v2 .sartist{ color: var(--text-dim); font-weight: 500; }
+.meta-chip{
+  background: color-mix(in oklab, var(--surface) 65%, transparent);
+  border:1px solid var(--border);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+}
+.meta-chip-label{ color: var(--text-muted); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; }
+.meta-chip-value{ font-family: var(--font-display); font-weight:700; }
+.meta-chip-key .meta-chip-value{ color:#eadcff; }
+
+/* Botões de ação da cifra */
+.chord-list-toggle{
+  border:1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  transition: border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.chord-list-toggle:hover{ border-color: var(--border-strong); }
+.chord-list-toggle.open{
+  border-color: color-mix(in oklab, var(--accent) 50%, transparent);
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  color: #efe7ff;
+}
+
+/* Letra / acordes — legibilidade */
+.lyric-line{ line-height: 1.65; }
+.lyric-line .ch{
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing:.005em;
+}
+.lyric-line .wd{ color: var(--text); }
+.sec-label{
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing:.14em;
+  font-size:.7rem;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  display:inline-block;
+  border:1px solid var(--border);
+}
+.refrao-box{
+  border-left: 3px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* Bottom nav — glass premium */
+.bottom-nav{
+  background: color-mix(in oklab, var(--bg-alt) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.35);
+}
+.nav-item{ transition: color .15s ease, background .15s ease, transform .1s ease; border-radius: 12px; }
+.nav-item.active{ color: #efe7ff; }
+.nav-item.active .nav-icon-wrap{
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent);
+}
+
+/* Inputs — busca */
+input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea{
+  background: color-mix(in oklab, var(--surface) 80%, transparent);
+  border:1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+input[type="text"]:focus, input[type="search"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus{
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  box-shadow: var(--ring-accent);
+  background: var(--surface);
+}
+::placeholder{ color: var(--text-muted); opacity: .9; }
+
+/* Cards de setlist — mais valor percebido */
+.setlist-card, .setlist-item{
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color .15s ease, transform .12s ease, box-shadow .2s ease;
+  box-shadow: var(--shadow-xs);
+}
+.setlist-card:hover, .setlist-item:hover{
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.setlist-card:active, .setlist-item:active{ transform: scale(.99); }
+
+/* CTA premium global */
+.premium-cta, .account-btn-primary{
+  background: var(--gradient-gold);
+  color:#241703;
+  font-weight: 800;
+  letter-spacing:.005em;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px -10px rgba(244,197,66,.45), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.premium-cta:hover, .account-btn-primary:hover{ filter: brightness(1.04); transform: translateY(-1px); }
+.premium-cta:active, .account-btn-primary:active{ transform: translateY(0); }
+
+/* Foco acessível uniforme */
+:where(button, a, [role="button"]):focus-visible{
+  outline: none;
+  box-shadow: var(--ring-accent);
+  border-radius: 10px;
+}
+
+/* Divisores e separadores mais suaves */
+hr, .divider{ border:none; height:1px; background: var(--border); }
+
+/* Scrollbar discreta em desktop */
+@media (hover:hover){
+  ::-webkit-scrollbar{ width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb{
+    background: color-mix(in oklab, var(--text-muted) 40%, transparent);
+    border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover{ background: color-mix(in oklab, var(--text-muted) 60%, transparent); background-clip: padding-box; border: 2px solid transparent; }
+  ::-webkit-scrollbar-track{ background: transparent; }
+}
+
+/* Modal — polimento */
+.modal-bg{ backdrop-filter: blur(8px); background: rgba(4,4,12,0.6); }
+.premium-modal, .modal-content{
+  border:1px solid var(--border);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Mobile — ajustes finais */
+@media (max-width: 480px){
+  .song-header-v2{ border-radius: 16px; }
+  .welcome h2{ font-size: 1.6rem; }
+  .empty-state-title{ font-size: 1.15rem; }
+}
