@@ -336,6 +336,11 @@ export default function App() {
   }, [])
 
   const handleAdd = useCallback(async song => {
+    if (!isPremium && songs.length >= FREE_SONG_LIMIT) {
+      setShowModal(false)
+      setShowUpgrade('songs')
+      return
+    }
     setShowModal(false)
     let toStore = song
     if (authUser?.id) {
@@ -348,7 +353,7 @@ export default function App() {
     setBpm(toStore.bpm || 80)
     setScreen('view')
     setTimeout(() => showToast('Música salva no seu repertório'), 100)
-  }, [authUser, setSongs, showToast])
+  }, [authUser, isPremium, songs.length, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
     setConfirmDelete(song)
