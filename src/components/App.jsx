@@ -1033,8 +1033,12 @@ export default function App() {
             <div id="content">
               <MobileSetlistList
                 setlists={setlists}
+                isPremium={isPremium}
                 onSelect={sl => { setActiveSetlist(sl); setScreen('setlist-view') }}
                 onCreate={createSetlist}
+                onDuplicate={duplicateSetlist}
+                onDelete={deleteSetlist}
+                onUpgrade={() => setShowUpgrade('generic')}
               />
             </div>
             <div className="keyboard-hint">Crie repertórios para seus ensaios e shows</div>
