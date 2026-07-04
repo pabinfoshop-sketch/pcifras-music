@@ -1701,10 +1701,10 @@ function EmptySetlist({ onCreate }) {
   return (
     <div className="setlist-empty">
       <div className="setlist-empty-icon" aria-hidden="true">📋</div>
-      <div className="setlist-empty-eyebrow">Seu palco começa aqui</div>
-      <h3 className="setlist-empty-title">Monte seu primeiro repertório</h3>
+      <div className="setlist-empty-eyebrow">Organize seu palco</div>
+      <h3 className="setlist-empty-title">Crie seu primeiro repertório</h3>
       <p className="setlist-empty-text">
-        Junte suas músicas em uma sequência pronta para tocar — sem folhas, sem bagunça.
+        Reúna suas músicas na ordem exata do ensaio, culto ou show. Pronto para tocar, sem folhas soltas.
       </p>
       <ul className="setlist-empty-uses">
         {uses.map(u => (
@@ -1712,7 +1712,7 @@ function EmptySetlist({ onCreate }) {
         ))}
       </ul>
       <button className="empty-state-cta" onClick={onCreate}>+ Criar repertório</button>
-      <div className="setlist-empty-hint">Leva menos de 10 segundos</div>
+      <div className="setlist-empty-hint">Menos de 10 segundos para começar</div>
     </div>
   )
 }
