@@ -62,6 +62,8 @@ export default function App() {
   const [showModal, setShowModal] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [toast, setToast] = useState('')
+  const [loadingCloud, setLoadingCloud] = useState(false)
+  const [savingSong, setSavingSong] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeStep, setActiveStep] = useState(-1)
   const [bpm, setBpm] = useState(80)
@@ -285,24 +287,30 @@ export default function App() {
   useEffect(() => {
     if (!authUser?.id) return
     let cancelled = false
+    setLoadingCloud(true)
     ;(async () => {
-      const cloud = await loadCloudSongs(authUser.id)
-      if (cancelled) return
-      setSongs(prev => {
-        const byId = new Map()
-        cloud.forEach(s => byId.set(s.id, s))
-        // Migra músicas locais ainda não sincronizadas
-        prev.forEach(s => {
-          if (!byId.has(s.id)) {
-            byId.set(s.id, s)
-            upsertCloudSong(authUser.id, s)
-          }
+      try {
+        const cloud = await loadCloudSongs(authUser.id)
+        if (cancelled) return
+        setSongs(prev => {
+          const byId = new Map()
+          cloud.forEach(s => byId.set(s.id, s))
+          prev.forEach(s => {
+            if (!byId.has(s.id)) {
+              byId.set(s.id, s)
+              upsertCloudSong(authUser.id, s).catch(() => {})
+            }
+          })
+          return Array.from(byId.values())
         })
-        return Array.from(byId.values())
-      })
+      } catch (e) {
+        if (!cancelled) showToast('Não conseguimos carregar suas músicas da nuvem. Tente novamente.')
+      } finally {
+        if (!cancelled) setLoadingCloud(false)
+      }
     })()
     return () => { cancelled = true }
-  }, [authUser?.id, setSongs])
+  }, [authUser?.id, setSongs, showToast])
 
   const handleGoogleLogin = useCallback(async () => {
     try {
@@ -346,15 +354,22 @@ export default function App() {
     setShowModal(false)
     let toStore = song
     if (authUser?.id) {
-      const newId = await upsertCloudSong(authUser.id, song)
-      if (newId && newId !== song.id) toStore = { ...song, id: newId }
+      setSavingSong(true)
+      try {
+        const newId = await upsertCloudSong(authUser.id, song)
+        if (newId && newId !== song.id) toStore = { ...song, id: newId }
+      } catch (e) {
+        showToast('Não foi possível salvar na nuvem. Salvamos localmente por enquanto.')
+      } finally {
+        setSavingSong(false)
+      }
     }
     setSongs(prev => [...prev, toStore])
     setCurrentSong(toStore)
     setTranspose(0)
     setBpm(toStore.bpm || 80)
     setScreen('view')
-    setTimeout(() => showToast('Música salva no seu repertório'), 100)
+    setTimeout(() => showToast('✓ Música salva no seu repertório'), 100)
   }, [authUser, isPremium, songs.length, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
@@ -365,22 +380,26 @@ export default function App() {
     setSongs(prev => {
       const next = prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s)
       const updated = next.find(s => s.id === id)
-      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated)
+      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated).catch(() => {})
       return next
     })
   }, [authUser, setSongs])
 
-  const confirmDeleteSong = useCallback(() => {
+  const confirmDeleteSong = useCallback(async () => {
     if (!confirmDelete) return
-    if (authUser?.id) deleteCloudSong(authUser.id, confirmDelete.id)
-    setSongs(prev => prev.filter(s => s.id !== confirmDelete.id))
-    if (currentSong?.id === confirmDelete.id) {
-      const remaining = songs.filter(s => s.id !== confirmDelete.id)
+    const target = confirmDelete
+    setConfirmDelete(null)
+    if (authUser?.id) {
+      try { await deleteCloudSong(authUser.id, target.id) }
+      catch { showToast('Não foi possível remover da nuvem. Tente novamente.'); return }
+    }
+    setSongs(prev => prev.filter(s => s.id !== target.id))
+    if (currentSong?.id === target.id) {
+      const remaining = songs.filter(s => s.id !== target.id)
       setCurrentSong(remaining.length > 0 ? remaining[0] : null)
       if (remaining.length === 0) setScreen('songs')
     }
-    setConfirmDelete(null)
-    showToast('Música removida do seu repertório')
+    showToast('🗑 Música removida do seu repertório')
   }, [authUser, confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
@@ -777,7 +796,8 @@ export default function App() {
       {(screen === 'songs' || screen === 'setlists') && (
         <div className="sidebar-panel desktop-only">
           <div className="sidebar-header">
-            {screen === 'songs' ? '🎸 songpcmusic' : '📋 Repertórios'}
+            <span>{screen === 'songs' ? '🎸 songpcmusic' : '📋 Repertórios'}</span>
+            {isPremium && <span className="pro-badge" title="Assinante PRO">PRO</span>}
           </div>
           {screen === 'songs' ? (
             <>
@@ -987,7 +1007,7 @@ export default function App() {
         ) : screen === 'setlists' ? (
           <>
             <div className="topbar">
-              <div className="topbar-title">📋 Repertórios</div>
+              <div className="topbar-title">📋 Repertórios {isPremium && <span className="pro-badge">PRO</span>}</div>
               <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={createSetlist}>+</button>
             </div>
@@ -1051,10 +1071,11 @@ export default function App() {
               <div className="topbar-brand">
                 <span className="topbar-brand-mark">♪</span>
                 <div className="topbar-brand-text">
-                  <span className="topbar-brand-title">PCifras<span className="topbar-brand-accent">Music</span></span>
+                  <span className="topbar-brand-title">PCifras<span className="topbar-brand-accent">Music</span>{isPremium && <span className="pro-badge">PRO</span>}</span>
                   <span className="topbar-brand-sub">Cifras & Repertórios</span>
                 </div>
               </div>
+              {(loadingCloud || savingSong) && <span className="inline-spinner" aria-label="Carregando" title={savingSong ? 'Salvando…' : 'Carregando…'} />}
               <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={() => setShowModal(true)} title="Adicionar música">+</button>
             </div>
@@ -1148,6 +1169,10 @@ export default function App() {
       </div>
 
       <InstallAppButton />
+
+      <footer className="app-footer" aria-label="Rodapé">
+        Feito com <span className="app-footer-heart" aria-hidden="true">♥</span> para músicos · <strong>PCifras</strong>
+      </footer>
 
 
       {showModal && <Modal onAdd={handleAdd} onClose={() => setShowModal(false)} />}
@@ -1576,12 +1601,31 @@ export default function App() {
   )
 }
 
+function EmptySetlist({ onCreate }) {
+  return (
+    <div className="empty-state">
+      <div className="empty-state-illustration" aria-hidden="true">
+        <div className="empty-state-circle">📋</div>
+        <span className="empty-state-note note-1">♪</span>
+        <span className="empty-state-note note-2">♫</span>
+        <span className="empty-state-note note-3">♩</span>
+      </div>
+      <h3 className="empty-state-title">Nenhum repertório ainda</h3>
+      <p className="empty-state-text">
+        Organize suas músicas por ensaios, shows ou culto.<br />
+        Crie seu primeiro repertório em segundos.
+      </p>
+      <button className="empty-state-cta" onClick={onCreate}>+ Criar repertório</button>
+    </div>
+  )
+}
+
 function SetlistList({ setlists, onSelect, onCreate }) {
   return (
     <div className="sidebar-songs">
       <button className="sidebar-add-btn" onClick={onCreate}>+ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Nenhum repertório por aqui.<br />Crie um para organizar suas músicas.</div>
+        <EmptySetlist onCreate={onCreate} />
       ) : (
         setlists.map(sl => (
           <div key={sl.id} className="song-card" onClick={() => onSelect(sl)}>
@@ -1602,7 +1646,7 @@ function MobileSetlistList({ setlists, onSelect, onCreate }) {
     <div>
       <button className="msearch-btn" style={{width:'100%',marginBottom:12}} onClick={onCreate}>+ Novo Repertório</button>
       {setlists.length === 0 ? (
-        <div className="empty-list">Você ainda não tem repertórios.<br />Crie um para organizar suas músicas.</div>
+        <EmptySetlist onCreate={onCreate} />
       ) : (
         <div className="song-list">
           {setlists.map(sl => (
