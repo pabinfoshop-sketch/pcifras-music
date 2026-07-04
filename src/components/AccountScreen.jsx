@@ -13,7 +13,7 @@ export default function AccountScreen({ user, isPremium, onSubscribe, onManage, 
 
   const benefits = [
     { ico: '☁️', label: 'Backup na nuvem' },
-    { ico: '🔄', label: 'Sync entre dispositivos' },
+    { ico: '🔄', label: 'Sincronização entre dispositivos' },
     { ico: '🎼', label: 'Repertórios ilimitados' },
     { ico: '🎤', label: 'Ferramentas de palco' },
   ]
