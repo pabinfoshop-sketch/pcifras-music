@@ -1168,6 +1168,10 @@ export default function App() {
 
       <InstallAppButton />
 
+      <footer className="app-footer" aria-label="Rodapé">
+        Feito com <span className="app-footer-heart" aria-hidden="true">♥</span> para músicos · <strong>PCifras</strong>
+      </footer>
+
 
       {showModal && <Modal onAdd={handleAdd} onClose={() => setShowModal(false)} />}
 
