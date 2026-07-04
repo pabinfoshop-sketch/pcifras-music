@@ -705,13 +705,13 @@ export default function App() {
 
   const handleCloudSync = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
-    if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
+    if (!isPremium) { setShowUpgrade('cloud'); return }
     showToast('Backup na nuvem em breve — seus dados seguem salvos neste dispositivo.')
   }, [authUser, isPremium, showToast])
 
   const handleCloudRestore = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
-    if (!isPremium) { showToast('Recurso exclusivo do plano Premium'); return }
+    if (!isPremium) { setShowUpgrade('cloud'); return }
     showToast('Restauração na nuvem em breve — assim que o backup for ativado.')
   }, [authUser, isPremium, showToast])
 
@@ -915,10 +915,14 @@ export default function App() {
                       <button className={`tbtn ${studyMode ? 'active-tbtn' : ''}`} onClick={() => { setStudyMode(p => !p); setShowMoreMenu(false) }}>{studyMode ? '📖' : '📘'} Modo Estudo</button>
                       <button className={`tbtn ${voiceScroll ? 'active-tbtn' : ''}`} onClick={() => { toggleVoiceScroll(); setShowMoreMenu(false) }}>{voiceScroll ? '🎤' : '🎙'} Voz</button>
                       <button className="tbtn" onClick={() => { setShowTuner(true); setShowMoreMenu(false) }}>🎸 Afinar</button>
-                      {authUser && isPremium && (
+                      {authUser && (
                         <>
-                          <button className="tbtn" onClick={() => { handleCloudSync(); setShowMoreMenu(false) }}>☁️ Salvar</button>
-                          <button className="tbtn" onClick={() => { handleCloudRestore(); setShowMoreMenu(false) }}>☁️ Restaurar</button>
+                          <button className={`tbtn ${!isPremium ? 'pro-locked' : ''}`} onClick={() => { handleCloudSync(); setShowMoreMenu(false) }}>
+                            ☁️ Salvar {!isPremium && <span className="pro-badge pro-badge-inline">PRO</span>}
+                          </button>
+                          <button className={`tbtn ${!isPremium ? 'pro-locked' : ''}`} onClick={() => { handleCloudRestore(); setShowMoreMenu(false) }}>
+                            ☁️ Restaurar {!isPremium && <span className="pro-badge pro-badge-inline">PRO</span>}
+                          </button>
                         </>
                       )}
                       <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={() => { openSupport(); setShowMoreMenu(false) }}>{isPremium ? '⭐' : '☕'} Apoiar</button>

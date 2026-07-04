@@ -10,6 +10,16 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
       title: 'Repertórios ilimitados no Premium',
       sub: 'O plano grátis permite apenas 1 repertório. Assine o Premium e monte quantos quiser para cada culto, ensaio ou show.',
     },
+    cloud: {
+      eyebrow: 'Recurso exclusivo do Premium',
+      title: 'Sincronize suas músicas na nuvem',
+      sub: 'Tenha backup automático e acesse suas cifras em qualquer dispositivo. Faça upgrade para continuar.',
+    },
+    advanced: {
+      eyebrow: 'Recurso exclusivo do Premium',
+      title: 'Desbloqueie repertórios avançados',
+      sub: 'Ferramentas de palco, ensaio e organização para levar seu preparo a outro nível.',
+    },
     generic: {
       eyebrow: 'PCifras Music Premium',
       title: 'Toque com liberdade total',
