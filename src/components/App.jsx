@@ -602,6 +602,15 @@ export default function App() {
     showToast('Repertório removido')
   }, [setSetlists, activeSetlist, showToast])
 
+  const duplicateSetlist = useCallback(sl => {
+    if (!isPremium && setlists.length >= FREE_SETLIST_LIMIT) {
+      setShowUpgrade('setlists'); return
+    }
+    const copy = { ...sl, id: `sl_${Date.now()}`, name: `${sl.name} (cópia)`, songIds: [...(sl.songIds || [])] }
+    setSetlists(prev => [copy, ...prev])
+    showToast('Repertório duplicado')
+  }, [isPremium, setlists.length, setSetlists, showToast])
+
   const addSongToSetlist = useCallback((songId, setId) => {
     setSetlists(prev => prev.map(sl =>
       sl.id === setId && !sl.songIds.includes(songId)
