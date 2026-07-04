@@ -779,11 +779,77 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .song-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
   margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed color-mix(in oklab, var(--border) 70%, transparent);
+}
+.song-actions-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.song-actions-divider {
+  flex: 1;
+  min-width: 8px;
 }
 .song-actions .chord-list-toggle {
   margin-top: 0;
+}
+.chord-list-toggle-ghost {
+  background: color-mix(in oklab, var(--accent) 12%, transparent) !important;
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--border)) !important;
+  color: var(--accent) !important;
+}
+.chord-list-toggle-ghost:hover {
+  background: color-mix(in oklab, var(--accent) 22%, transparent) !important;
+}
+
+/* Prominent tom + inline transpose */
+.meta-chip-hero {
+  padding: 8px 12px;
+  gap: 10px;
+}
+.meta-chip-value-lg {
+  font-size: 1.15rem !important;
+  letter-spacing: -0.01em;
+}
+.transpose-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  padding-left: 8px;
+  border-left: 1px solid color-mix(in oklab, var(--accent) 30%, var(--border));
+}
+.transpose-btn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, var(--border));
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.transpose-btn:hover {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.transpose-btn:active { transform: scale(0.92); }
+.transpose-reset {
+  width: auto;
+  padding: 0 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 .song-rhythm-info {
@@ -807,7 +873,10 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .sartist { font-size: 0.85rem; }
   .meta-chip { padding: 5px 9px; }
   .meta-chip-value { font-size: 0.8rem; }
+  .meta-chip-value-lg { font-size: 1.05rem !important; }
+  .song-actions-divider { display: none; }
 }
+
 
 
 /* ─── STUDY MODE ─── */
