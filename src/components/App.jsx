@@ -12,6 +12,7 @@ import UpgradeModal from './UpgradeModal'
 import AccountScreen from './AccountScreen'
 import ErrorBoundary from './ErrorBoundary'
 import InstallAppButton from './InstallAppButton'
+import OfflineBanner from './OfflineBanner'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
@@ -1168,6 +1169,7 @@ export default function App() {
         </div>
       </div>
 
+      <OfflineBanner />
       <InstallAppButton />
 
       <footer className="app-footer" aria-label="Rodapé">
