@@ -13,6 +13,7 @@ import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
+import { loadCloudSongs, upsertCloudSong, deleteCloudSong } from '@/lib/cloudSongs'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
@@ -274,6 +275,29 @@ export default function App() {
     return () => { mounted = false; sub.subscription.unsubscribe() }
   }, [refreshProfile, setAuthUser])
 
+  // Carrega repertório do usuário da nuvem ao logar; mescla com músicas locais.
+  useEffect(() => {
+    if (!authUser?.id) return
+    let cancelled = false
+    ;(async () => {
+      const cloud = await loadCloudSongs(authUser.id)
+      if (cancelled) return
+      setSongs(prev => {
+        const byId = new Map()
+        cloud.forEach(s => byId.set(s.id, s))
+        // Migra músicas locais ainda não sincronizadas
+        prev.forEach(s => {
+          if (!byId.has(s.id)) {
+            byId.set(s.id, s)
+            upsertCloudSong(authUser.id, s)
+          }
+        })
+        return Array.from(byId.values())
+      })
+    })()
+    return () => { cancelled = true }
+  }, [authUser?.id, setSongs])
+
   const handleGoogleLogin = useCallback(async () => {
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
@@ -307,26 +331,37 @@ export default function App() {
     setScreen('view')
   }, [])
 
-  const handleAdd = useCallback(song => {
+  const handleAdd = useCallback(async song => {
     setShowModal(false)
-    setSongs(prev => [...prev, song])
-    setCurrentSong(song)
+    let toStore = song
+    if (authUser?.id) {
+      const newId = await upsertCloudSong(authUser.id, song)
+      if (newId && newId !== song.id) toStore = { ...song, id: newId }
+    }
+    setSongs(prev => [...prev, toStore])
+    setCurrentSong(toStore)
     setTranspose(0)
-    setBpm(song.bpm || 80)
+    setBpm(toStore.bpm || 80)
     setScreen('view')
     setTimeout(() => showToast('Música salva no seu repertório'), 100)
-  }, [showToast])
+  }, [authUser, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
     setConfirmDelete(song)
   }, [])
 
   const handleToggleFavorite = useCallback(id => {
-    setSongs(prev => prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s))
-  }, [setSongs])
+    setSongs(prev => {
+      const next = prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s)
+      const updated = next.find(s => s.id === id)
+      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated)
+      return next
+    })
+  }, [authUser, setSongs])
 
   const confirmDeleteSong = useCallback(() => {
     if (!confirmDelete) return
+    if (authUser?.id) deleteCloudSong(authUser.id, confirmDelete.id)
     setSongs(prev => prev.filter(s => s.id !== confirmDelete.id))
     if (currentSong?.id === confirmDelete.id) {
       const remaining = songs.filter(s => s.id !== confirmDelete.id)
@@ -335,7 +370,7 @@ export default function App() {
     }
     setConfirmDelete(null)
     showToast('Música removida do seu repertório')
-  }, [confirmDelete, currentSong, songs, setSongs, showToast])
+  }, [authUser, confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
     if (metroRef.current) { clearInterval(metroRef.current); metroRef.current = null }
@@ -668,8 +703,9 @@ export default function App() {
     const updated = { ...currentSong, [field]: videoId }
     setSongs(prev => prev.map(s => s.id === currentSong.id ? updated : s))
     setCurrentSong(updated)
+    if (authUser?.id) upsertCloudSong(authUser.id, updated)
     showToast(`Áudio ${mode === 'original' ? 'Original' : 'Playback'} carregado!`)
-  }, [currentSong, setSongs, showToast])
+  }, [authUser, currentSong, setSongs, showToast])
 
   const openEditor = useCallback(() => {
     if (!currentSong) return
@@ -690,9 +726,10 @@ export default function App() {
     song.playbackUrl = editPlaybackUrl.trim() || undefined
     setSongs(prev => prev.map(s => s.id === currentSong.id ? song : s))
     setCurrentSong(song)
+    if (authUser?.id) upsertCloudSong(authUser.id, song)
     setShowEditor(false)
     showToast('Cifra atualizada!')
-  }, [currentSong, editRawText, editOriginalUrl, editPlaybackUrl, setSongs, showToast])
+  }, [authUser, currentSong, editRawText, editOriginalUrl, editPlaybackUrl, setSongs, showToast])
 
   if (authLoading) {
     return (

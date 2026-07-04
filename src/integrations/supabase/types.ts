@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      musicas: {
+        Row: {
+          artista: string | null
+          cifra: string | null
+          criado_em: string
+          id: string
+          repertorio_id: string | null
+          titulo: string
+          tom: string | null
+          user_id: string
+        }
+        Insert: {
+          artista?: string | null
+          cifra?: string | null
+          criado_em?: string
+          id?: string
+          repertorio_id?: string | null
+          titulo: string
+          tom?: string | null
+          user_id: string
+        }
+        Update: {
+          artista?: string | null
+          cifra?: string | null
+          criado_em?: string
+          id?: string
+          repertorio_id?: string | null
+          titulo?: string
+          tom?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "musicas_repertorio_id_fkey"
+            columns: ["repertorio_id"]
+            isOneToOne: false
+            referencedRelation: "repertorios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number | null
@@ -83,6 +124,27 @@ export type Database = {
           premium_until?: string | null
           trial_ends_at?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      repertorios: {
+        Row: {
+          criado_em: string
+          id: string
+          nome: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          nome: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          nome?: string
+          user_id?: string
         }
         Relationships: []
       }
