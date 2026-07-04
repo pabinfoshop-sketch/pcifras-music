@@ -127,19 +127,19 @@ export default function AuthModal({ mode, setMode, onAuth, onGoogle, onClose }) 
           <button type="submit" className="auth-submit-v2" disabled={loading}>
             {loading
               ? 'Aguarde…'
-              : isRegister ? 'Começar teste grátis de 7 dias' : 'Entrar na minha conta'}
+              : isRegister ? 'Começar 7 dias grátis' : 'Entrar'}
           </button>
 
           <div className="auth-switch-v2">
             {isRegister ? (
               <>Já tem conta? <button type="button" className="link-btn-v2" onClick={() => setMode('login')}>Entrar</button></>
             ) : (
-              <>Novo por aqui? <button type="button" className="link-btn-v2" onClick={() => setMode('register')}>Criar conta grátis</button></>
+              <>Novo por aqui? <button type="button" className="link-btn-v2" onClick={() => setMode('register')}>Criar conta gratuita</button></>
             )}
           </div>
 
           <div className="auth-foot-v2">
-            <span>🔒 Seus dados ficam seguros</span>
+            <span>🔒 Seus dados protegidos</span>
             <span>·</span>
             <span>Cancele quando quiser</span>
           </div>
