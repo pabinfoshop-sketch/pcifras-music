@@ -94,6 +94,7 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState('login')
   const [showSupport, setShowSupport] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(null) // 'songs' | 'setlists' | 'generic' | null
   const isPremium = !!authUser?.premium
   const openSupport = useCallback(() => {
     setShowSupport(true)
