@@ -1481,7 +1481,7 @@ export default function App() {
         </div>
       )}
 
-      {showAuth && <AuthModal mode={authMode} setMode={setAuthMode} onAuth={handleAuth} onClose={() => setShowAuth(false)} />}
+      {showAuth && <AuthModal mode={authMode} setMode={setAuthMode} onAuth={handleAuth} onGoogle={handleGoogleLogin} onClose={() => setShowAuth(false)} />}
 
       {confirmDelete && (
         <ConfirmDialog
