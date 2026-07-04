@@ -4236,9 +4236,33 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   background:none; border:none; color:#7c5cff; font-weight:600; cursor:pointer;
 }
 
+.auth-screen-eyebrow{
+  display:inline-block; margin:0 auto 10px;
+  padding:4px 10px; border-radius:999px;
+  background:rgba(245,196,81,.12); color:#f5c451;
+  border:1px solid rgba(245,196,81,.28);
+  font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+}
+.auth-benefits-row{
+  list-style:none; padding:0; margin:16px 0 0;
+  display:flex; justify-content:center; flex-wrap:wrap; gap:8px;
+}
+.auth-benefits-row li{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:999px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  color:#c5cbdb; font-size:.75rem; font-weight:600;
+}
+.auth-benefits-row li span{ font-size:.95rem; }
+.auth-trust-row{
+  display:flex; justify-content:center; align-items:center; gap:8px;
+  margin-top:12px; color:#7d8598; font-size:.72rem;
+}
+
 @media (max-width:480px){
   .auth-screen-card{ padding:24px 20px; border-radius:18px; }
   .auth-screen-title{ font-size:1.35rem; }
+  .auth-benefits-row li{ font-size:.7rem; padding:5px 9px; }
 }
 
 /* ===== Upgrade Modal ===== */
