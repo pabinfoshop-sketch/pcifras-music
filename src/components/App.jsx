@@ -680,8 +680,9 @@ export default function App() {
     const updated = { ...currentSong, [field]: videoId }
     setSongs(prev => prev.map(s => s.id === currentSong.id ? updated : s))
     setCurrentSong(updated)
+    if (authUser?.id) upsertCloudSong(authUser.id, updated)
     showToast(`Áudio ${mode === 'original' ? 'Original' : 'Playback'} carregado!`)
-  }, [currentSong, setSongs, showToast])
+  }, [authUser, currentSong, setSongs, showToast])
 
   const openEditor = useCallback(() => {
     if (!currentSong) return
@@ -702,9 +703,10 @@ export default function App() {
     song.playbackUrl = editPlaybackUrl.trim() || undefined
     setSongs(prev => prev.map(s => s.id === currentSong.id ? song : s))
     setCurrentSong(song)
+    if (authUser?.id) upsertCloudSong(authUser.id, song)
     setShowEditor(false)
     showToast('Cifra atualizada!')
-  }, [currentSong, editRawText, editOriginalUrl, editPlaybackUrl, setSongs, showToast])
+  }, [authUser, currentSong, editRawText, editOriginalUrl, editPlaybackUrl, setSongs, showToast])
 
   if (authLoading) {
     return (
