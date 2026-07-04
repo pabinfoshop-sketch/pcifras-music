@@ -2,8 +2,8 @@ import { useState, useRef } from 'react'
 import { parseCifraText } from '../utils/parser'
 import { detectKey } from '../utils/chordDiagrams'
 
-export default function Modal({ onAdd, onClose }) {
-  const [tab, setTab] = useState('search')
+export default function Modal({ onAdd, onClose, initialTab = 'search' }) {
+  const [tab, setTab] = useState(initialTab)
   const [errorMsg, setErrorMsg] = useState('')
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('idle')

@@ -61,6 +61,7 @@ export default function App() {
   const [filter, setFilter] = useState('')
   const [showFavorites, setShowFavorites] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [modalInitialTab, setModalInitialTab] = useState('search')
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [toast, setToast] = useState('')
   const [loadingCloud, setLoadingCloud] = useState(false)
@@ -1082,15 +1083,35 @@ export default function App() {
             </div>
             <div id="content" style={{paddingTop:8}}>
               {welcome ? (
-                <div className="welcome">
+                <div className="welcome welcome-premium">
                   <div className="welcome-icon">♫</div>
-                  <h2>Comece seu repertório</h2>
-                  <p>Adicione cifras manualmente ou busque online e organize suas músicas em setlists.</p>
-                  <div className="welcome-actions">
-                    <button className="welcome-btn welcome-btn-primary" onClick={() => setShowModal(true)}>+ Adicionar Música</button>
+                  <div className="welcome-eyebrow">PCifras Music</div>
+                  <h2>Sua cifra, seu ensaio, seu palco.</h2>
+                  <p>Salve cifras, monte repertórios e leve tudo no bolso — pronto pro culto, ensaio ou show.</p>
+                  <div className="welcome-actions welcome-actions-stack">
+                    <button
+                      className="welcome-btn welcome-btn-primary"
+                      onClick={() => { setModalInitialTab('manual'); setShowModal(true) }}
+                    >
+                      + Adicionar primeira música
+                    </button>
+                    <button
+                      className="welcome-btn welcome-btn-secondary"
+                      onClick={() => { setModalInitialTab('search'); setShowModal(true) }}
+                    >
+                      🔎 Buscar cifra online
+                    </button>
                   </div>
-                  <div className="welcome-hint">Suas músicas ficam salvas neste dispositivo.</div>
+                  <ul className="welcome-benefits" aria-label="Benefícios">
+                    <li><span className="wb-ico">💾</span><div><strong>Salve suas cifras</strong><span>Tudo organizado num toque</span></div></li>
+                    <li><span className="wb-ico">🎼</span><div><strong>Monte repertórios</strong><span>Um pra cada culto ou show</span></div></li>
+                    <li><span className="wb-ico">📱</span><div><strong>Use no palco</strong><span>Leve no celular, offline</span></div></li>
+                    <li><span className="wb-ico">👑</span><div><strong>Recursos premium</strong><span>Afinador, transporte e mais</span></div></li>
+                  </ul>
+                  <div className="welcome-hint">✓ Sem cadastro obrigatório · ✓ Funciona offline</div>
                 </div>
+
+
 
               ) : (
                 <>
@@ -1177,7 +1198,7 @@ export default function App() {
       </footer>
 
 
-      {showModal && <Modal onAdd={handleAdd} onClose={() => setShowModal(false)} />}
+      {showModal && <Modal initialTab={modalInitialTab} onAdd={handleAdd} onClose={() => setShowModal(false)} />}
 
       {showEditor && currentSong && (
         <div className="modal-bg" onClick={() => setShowEditor(false)}>
