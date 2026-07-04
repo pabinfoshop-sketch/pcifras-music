@@ -1095,11 +1095,11 @@ export default function App() {
                 <span className="topbar-brand-mark">♪</span>
                 <div className="topbar-brand-text">
                   <span className="topbar-brand-title">PCifras<span className="topbar-brand-accent">Music</span>{isPremium && <span className="pro-badge">PRO</span>}</span>
-                  <span className="topbar-brand-sub">Cifras & Repertórios</span>
+                  <span className="topbar-brand-sub">Seu repertório, sempre à mão</span>
                 </div>
               </div>
               {(loadingCloud || savingSong) && <span className="inline-spinner" aria-label="Carregando" title={savingSong ? 'Salvando…' : 'Carregando…'} />}
-              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Premium Ativo' : 'Apoiar o Projeto'}>{isPremium ? '⭐' : '☕'}</button>
+              <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Assinatura Premium ativa' : 'Conheça o Premium'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={() => setShowModal(true)} title="Adicionar música">+</button>
             </div>
             <div id="content" style={{paddingTop:8}}>
@@ -1107,8 +1107,8 @@ export default function App() {
                 <div className="welcome welcome-premium">
                   <div className="welcome-icon">♫</div>
                   <div className="welcome-eyebrow">PCifras Music</div>
-                  <h2>Sua cifra, seu ensaio, seu palco.</h2>
-                  <p>Salve cifras, monte repertórios e leve tudo no bolso — pronto pro culto, ensaio ou show.</p>
+                  <h2>O app do músico moderno.</h2>
+                  <p>Organize cifras, monte repertórios e leve tudo com você — pronto para o ensaio, culto ou show.</p>
                   <div className="welcome-actions welcome-actions-stack">
                     <button
                       className="welcome-btn welcome-btn-primary"
@@ -1124,12 +1124,12 @@ export default function App() {
                     </button>
                   </div>
                   <ul className="welcome-benefits" aria-label="Benefícios">
-                    <li><span className="wb-ico">💾</span><div><strong>Salve suas cifras</strong><span>Tudo organizado num toque</span></div></li>
-                    <li><span className="wb-ico">🎼</span><div><strong>Monte repertórios</strong><span>Um pra cada culto ou show</span></div></li>
-                    <li><span className="wb-ico">📱</span><div><strong>Use no palco</strong><span>Leve no celular, offline</span></div></li>
-                    <li><span className="wb-ico">👑</span><div><strong>Recursos premium</strong><span>Afinador, transporte e mais</span></div></li>
+                    <li><span className="wb-ico">💾</span><div><strong>Biblioteca organizada</strong><span>Salve e encontre em segundos</span></div></li>
+                    <li><span className="wb-ico">🎼</span><div><strong>Repertórios profissionais</strong><span>Um para cada ensaio, culto ou show</span></div></li>
+                    <li><span className="wb-ico">📱</span><div><strong>Pronto para o palco</strong><span>Funciona offline, sem travar</span></div></li>
+                    <li><span className="wb-ico">👑</span><div><strong>Ferramentas Premium</strong><span>Afinador, metrônomo e transposição</span></div></li>
                   </ul>
-                  <div className="welcome-hint">✓ Sem cadastro obrigatório · ✓ Funciona offline</div>
+                  <div className="welcome-hint">✓ Comece sem cadastro · ✓ Funciona offline</div>
                 </div>
 
 
