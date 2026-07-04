@@ -1,60 +1,94 @@
 export default function UpgradeModal({ reason, onClose, onSubscribe }) {
-  const messages = {
+  const headlines = {
     songs: {
-      title: 'Você atingiu o limite do plano FREE',
-      desc: 'O plano gratuito permite até 5 músicas no seu repertório. Assine o PRO para adicionar músicas ilimitadas.',
+      eyebrow: 'Limite do plano grátis',
+      title: 'Desbloqueie músicas ilimitadas',
+      sub: 'Você chegou ao limite de 5 músicas do plano grátis. Assine o Premium e leve seu repertório sem limites.',
     },
     setlists: {
-      title: 'Você atingiu o limite do plano FREE',
-      desc: 'O plano gratuito permite apenas 1 repertório. Assine o PRO para criar quantos repertórios quiser.',
+      eyebrow: 'Limite do plano grátis',
+      title: 'Repertórios ilimitados no Premium',
+      sub: 'O plano grátis permite apenas 1 repertório. Assine o Premium e monte quantos quiser para cada culto, ensaio ou show.',
     },
     generic: {
-      title: 'Desbloqueie o PCifrasMusic PRO',
-      desc: 'Tire o limite de músicas, tenha repertórios ilimitados e apoie o desenvolvimento do app.',
+      eyebrow: 'PCifras Music Premium',
+      title: 'Toque com liberdade total',
+      sub: 'Cifras, repertórios e recursos de palco sem limites. Feito para músicos que levam a sério.',
     },
   }
-  const m = messages[reason] || messages.generic
+  const h = headlines[reason] || headlines.generic
+
+  const benefits = [
+    { ico: '☁️', title: 'Backup na nuvem', desc: 'Nunca perca uma cifra' },
+    { ico: '🔄', title: 'Sync entre dispositivos', desc: 'Celular, tablet e web' },
+    { ico: '🎼', title: 'Repertórios avançados', desc: 'Organize por culto, show ou banda' },
+    { ico: '🎤', title: 'Ferramentas de palco', desc: 'Modo apresentação e auto-scroll' },
+    { ico: '🎚️', title: 'Recursos de ensaio', desc: 'Afinador, metrônomo e transporte' },
+    { ico: '⚡', title: 'Prioridade em novidades', desc: 'Recursos novos primeiro' },
+  ]
 
   return (
     <div className="modal-bg" onClick={onClose}>
-      <div className="upgrade-modal" onClick={e => e.stopPropagation()}>
-        <button className="modal-close upgrade-close" onClick={onClose} aria-label="Fechar">✕</button>
+      <div className="premium-modal" onClick={e => e.stopPropagation()}>
+        <button className="premium-close" onClick={onClose} aria-label="Fechar">✕</button>
 
-        <div className="upgrade-crown">👑</div>
-        <h2 className="upgrade-title">{m.title}</h2>
-        <p className="upgrade-desc">{m.desc}</p>
+        <div className="premium-hero">
+          <div className="premium-crown">👑</div>
+          <div className="premium-eyebrow">{h.eyebrow}</div>
+          <h2 className="premium-title">{h.title}</h2>
+          <p className="premium-sub">{h.sub}</p>
+        </div>
 
-        <div className="upgrade-plans">
-          <div className="upgrade-plan upgrade-plan-free">
-            <div className="upgrade-plan-name">FREE</div>
-            <div className="upgrade-plan-price">R$ 0<span>/mês</span></div>
-            <ul className="upgrade-features">
-              <li>✓ Até 5 músicas</li>
-              <li>✓ 1 repertório</li>
-              <li>✓ Afinador e metrônomo</li>
-              <li className="dim">✗ Ilimitado</li>
-            </ul>
-            <div className="upgrade-plan-tag">Plano atual</div>
-          </div>
-
-          <div className="upgrade-plan upgrade-plan-pro">
-            <div className="upgrade-badge">Recomendado</div>
-            <div className="upgrade-plan-name">PRO</div>
-            <div className="upgrade-plan-price">R$ 19,90<span>/mês</span></div>
-            <ul className="upgrade-features">
-              <li>✓ Músicas ilimitadas</li>
-              <li>✓ Repertórios ilimitados</li>
-              <li>✓ Sincronização na nuvem</li>
-              <li>✓ Apoia o desenvolvimento</li>
-            </ul>
-            <button className="upgrade-cta" onClick={onSubscribe}>
-              Assinar PRO
-            </button>
-            <div className="upgrade-note">💳 Pagamento em breve — sem cobrança agora</div>
+        <div className="premium-trial">
+          <div className="premium-trial-badge">7 DIAS GRÁTIS</div>
+          <div className="premium-trial-text">
+            <strong>Teste tudo sem pagar nada.</strong>
+            <span>Sem cartão de crédito. Cancele quando quiser.</span>
           </div>
         </div>
 
-        <button className="upgrade-later" onClick={onClose}>Continuar no FREE</button>
+        <ul className="premium-benefits">
+          {benefits.map(b => (
+            <li key={b.title}>
+              <span className="pb-ico">{b.ico}</span>
+              <div>
+                <strong>{b.title}</strong>
+                <span>{b.desc}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="premium-price-card">
+          <div className="premium-price-row">
+            <div className="premium-price-left">
+              <div className="premium-price-label">Plano Premium</div>
+              <div className="premium-price-value">
+                <span className="premium-currency">R$</span>
+                <span className="premium-amount">19,90</span>
+                <span className="premium-period">/mês</span>
+              </div>
+              <div className="premium-price-note">Ou economize com o plano anual</div>
+            </div>
+            <div className="premium-price-tag">Mais popular</div>
+          </div>
+
+          <button className="premium-cta" onClick={onSubscribe}>
+            Assinar agora · começar 7 dias grátis
+          </button>
+
+          <div className="premium-trust">
+            <span>🔒 Cobrança segura</span>
+            <span>·</span>
+            <span>⚡ Acesso imediato</span>
+            <span>·</span>
+            <span>✕ Cancele quando quiser</span>
+          </div>
+        </div>
+
+        <button className="premium-later" onClick={onClose}>
+          Continuar no plano grátis
+        </button>
       </div>
     </div>
   )
