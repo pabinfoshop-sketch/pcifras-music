@@ -32,6 +32,38 @@ const premiumFeatures = [
 ];
 
 function PlanosPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubscribe() {
+    setError(null);
+    setLoading(true);
+    try {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData.user) {
+        window.location.href = "/auth?next=/planos";
+        return;
+      }
+      const { data, error: fnErr } = await supabase.functions.invoke(
+        "create-mp-checkout",
+        {
+          body: {
+            user_id: userData.user.id,
+            origin: window.location.origin,
+          },
+        },
+      );
+      if (fnErr) throw fnErr;
+      const url = (data as any)?.init_point || (data as any)?.sandbox_init_point;
+      if (!url) throw new Error("URL de checkout não retornada");
+      window.location.href = url;
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message || "Erro ao iniciar checkout");
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10 sm:py-16">
       <div className="max-w-5xl mx-auto">
