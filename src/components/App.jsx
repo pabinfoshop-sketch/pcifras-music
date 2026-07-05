@@ -352,7 +352,10 @@ export default function App() {
   }, [])
 
   const handleAdd = useCallback(async song => {
-    console.log('Salvando música, isPremium:', isPremium)
+    console.log('=== DEBUG SALVAMENTO ===')
+    console.log('isPremium:', isPremium)
+    console.log('authUser:', authUser?.id)
+    console.log('Dados da música:', song)
     if (!isPremium && songs.length >= FREE_SONG_LIMIT) {
       setShowModal(false)
       setShowUpgrade('songs')
@@ -361,19 +364,27 @@ export default function App() {
     setShowModal(false)
     let toStore = song
     if (isPremium && authUser?.id) {
+      console.log('Salvando no Supabase...')
       setSavingSong(true)
       try {
         const newId = await addCloudSong(authUser.id, song)
         if (newId && newId !== song.id) toStore = { ...song, id: newId }
-        console.log('Música salva na nuvem:', toStore)
+        console.log('Música salva na nuvem, id:', newId)
+        // Recarregar músicas do Supabase para garantir consistência
+        const updatedSongs = await fetchUserSongs(authUser.id)
+        console.log('Músicas após salvar (total):', updatedSongs.length)
+        setSongs(updatedSongs)
       } catch (e) {
-        console.error('[cloud save] falhou:', e)
+        console.error('Erro ao salvar no Supabase:', e)
         showToast('Não foi possível salvar na nuvem. Salvamos localmente por enquanto.')
+        setSongs(prev => [...prev, toStore])
       } finally {
         setSavingSong(false)
       }
+    } else {
+      console.log('Salvando no localStorage...')
+      setSongs(prev => [...prev, toStore])
     }
-    setSongs(prev => [...prev, toStore])
     setCurrentSong(toStore)
     setTranspose(0)
     setBpm(toStore.bpm || 80)
