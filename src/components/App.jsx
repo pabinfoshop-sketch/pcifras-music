@@ -19,7 +19,7 @@ import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { loadCloudSongs, upsertCloudSong, deleteCloudSong } from '@/lib/cloudSongs'
-import { fetchUserSongs, addCloudSong as addCloudSongV2, syncLocalSongsToCloud } from '@/lib/songsService'
+import { fetchUserSongs, syncLocalSongsToCloud } from '@/lib/songsService'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
