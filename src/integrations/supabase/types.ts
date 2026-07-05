@@ -102,6 +102,8 @@ export type Database = {
           name: string | null
           premium: boolean
           premium_until: string | null
+          subscription_expires_at: string | null
+          subscription_status: string
           trial_ends_at: string | null
           updated_at: string
         }
@@ -112,6 +114,8 @@ export type Database = {
           name?: string | null
           premium?: boolean
           premium_until?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string
           trial_ends_at?: string | null
           updated_at?: string
         }
@@ -122,6 +126,8 @@ export type Database = {
           name?: string | null
           premium?: boolean
           premium_until?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string
           trial_ends_at?: string | null
           updated_at?: string
         }
