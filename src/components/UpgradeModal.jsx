@@ -3,7 +3,7 @@ export default function UpgradeModal({ reason, onClose, onSubscribe }) {
     songs: {
       eyebrow: 'Você atingiu o limite do plano gratuito',
       title: 'Tenha músicas ilimitadas com o Premium',
-      sub: 'O plano gratuito inclui até 5 músicas. Assine o Premium e monte uma biblioteca sem limites.',
+      sub: 'O plano gratuito inclui até 2 músicas. Assine o Premium e monte uma biblioteca sem limites.',
     },
     setlists: {
       eyebrow: 'Você atingiu o limite do plano gratuito',

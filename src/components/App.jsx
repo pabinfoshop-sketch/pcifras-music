@@ -48,7 +48,7 @@ function profileToUser(profile, sessionUser) {
 
 const STORE_KEY = 'cifras_app_songs'
 const SETLISTS_KEY = 'cifras_setlists'
-const FREE_SONG_LIMIT = 5
+const FREE_SONG_LIMIT = 2
 const FREE_SETLIST_LIMIT = 1
 
 // Configuração de apoio ao projeto — edite estes valores para os seus links reais
@@ -291,17 +291,25 @@ export default function App() {
 
   // Carrega repertório do usuário da nuvem ao logar (apenas Premium).
   useEffect(() => {
-    if (!authUser?.id || !isPremium) return
+    console.log('=== DEBUG CARREGAMENTO ===')
+    console.log('isPremium:', isPremium)
+    console.log('user:', authUser)
+    if (!authUser?.id || !isPremium) {
+      console.log('Carregando do localStorage (não Premium ou sem usuário)')
+      return
+    }
     let cancelled = false
     setLoadingCloud(true)
     ;(async () => {
       try {
+        console.log('Buscando músicas do Supabase para user.id:', authUser.id)
         const cloud = await fetchUserSongs(authUser.id)
         if (cancelled) return
-        console.log('Músicas carregadas da nuvem:', cloud)
+        console.log('Músicas retornadas do Supabase:', cloud)
+        console.log('Quantidade:', cloud.length)
         setSongs(cloud)
       } catch (e) {
-        console.error('[cloud load] falhou:', e)
+        console.error('Erro ao buscar músicas:', e)
         if (!cancelled) showToast('Não conseguimos carregar suas músicas da nuvem. Tente novamente.')
       } finally {
         if (!cancelled) setLoadingCloud(false)
