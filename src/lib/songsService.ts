@@ -58,9 +58,11 @@ export async function fetchUserSongs(userId: string) {
 export async function addCloudSong(userId: string, song: any) {
   if (!userId) throw new Error('Usuário não autenticado')
   const row = songToRow(userId, song)
-  const { error } = await supabase.from('songs').upsert(row)
+  console.log('addCloudSong chamado com:', row)
+  const { data, error } = await supabase.from('songs').upsert(row).select()
+  console.log('Resultado do insert:', { data, error })
   if (error) throw error
-  return row.id
+  return (data && data[0]?.id) || row.id
 }
 
 export async function deleteCloudSong(userId: string, songId: string) {
