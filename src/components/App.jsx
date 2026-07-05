@@ -360,7 +360,7 @@ export default function App() {
     }
     setShowModal(false)
     let toStore = song
-    if (authUser?.id) {
+    if (isPremium && authUser?.id) {
       setSavingSong(true)
       try {
         const newId = await upsertCloudSong(authUser.id, song)
