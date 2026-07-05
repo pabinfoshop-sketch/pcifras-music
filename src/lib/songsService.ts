@@ -45,12 +45,14 @@ function songToRow(userId: string, song: any) {
 }
 
 export async function fetchUserSongs(userId: string) {
+  console.log('fetchUserSongs chamado para userId:', userId)
   if (!userId) return []
   const { data, error } = await supabase
     .from('songs')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
+  console.log('Resultado do select:', { data, error, count: data?.length })
   if (error) throw error
   return (data || []).map(rowToSong)
 }
