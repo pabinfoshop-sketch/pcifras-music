@@ -64,9 +64,9 @@ export default function AccountScreen({ user, isPremium, onSubscribe, onManage, 
 
             <div className="account-actions">
               {paid ? (
-                <button className="account-btn account-btn-primary" onClick={onManage}>
+                <a className="account-btn account-btn-primary" href="/minha-assinatura" style={{textAlign:'center',textDecoration:'none',display:'block'}}>
                   ⚙️ Gerenciar assinatura
-                </button>
+                </a>
               ) : (
                 <button className="account-btn account-btn-primary" onClick={onSubscribe}>
                   ⭐ Assinar Premium
