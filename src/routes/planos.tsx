@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/planos")({
@@ -34,6 +35,34 @@ const premiumFeatures = [
 function PlanosPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [plan, setPlan] = useState<string>("free");
+
+  async function refreshProfile() {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("subscription_status")
+      .eq("id", userData.user.id)
+      .maybeSingle();
+    if (data?.subscription_status) setPlan(data.subscription_status);
+  }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    if (status === "sucesso") {
+      toast.success("Pagamento recebido! Verificando sua assinatura…");
+      // dá tempo do webhook processar
+      const t1 = setTimeout(refreshProfile, 1500);
+      const t2 = setTimeout(refreshProfile, 5000);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
+    if (status === "falha") toast.error("Pagamento não concluído.");
+    if (status === "pendente") toast("Pagamento pendente de confirmação.");
+    refreshProfile();
+  }, []);
+
 
   async function handleSubscribe() {
     setError(null);
