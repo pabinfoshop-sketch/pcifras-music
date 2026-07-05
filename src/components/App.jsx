@@ -19,6 +19,7 @@ import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { loadCloudSongs, upsertCloudSong, deleteCloudSong } from '@/lib/cloudSongs'
+import { fetchUserSongs, syncLocalSongsToCloud } from '@/lib/songsService'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
@@ -289,9 +290,9 @@ export default function App() {
     return () => { mounted = false; sub.subscription.unsubscribe() }
   }, [refreshProfile, setAuthUser])
 
-  // Carrega repertório do usuário da nuvem ao logar; mescla com músicas locais.
+  // Carrega repertório do usuário da nuvem ao logar (apenas Premium).
   useEffect(() => {
-    if (!authUser?.id) return
+    if (!authUser?.id || !isPremium) return
     let cancelled = false
     setLoadingCloud(true)
     ;(async () => {
@@ -316,7 +317,7 @@ export default function App() {
       }
     })()
     return () => { cancelled = true }
-  }, [authUser?.id, setSongs, showToast])
+  }, [authUser?.id, isPremium, setSongs, showToast])
 
   const handleGoogleLogin = useCallback(async () => {
     try {
@@ -359,7 +360,7 @@ export default function App() {
     }
     setShowModal(false)
     let toStore = song
-    if (authUser?.id) {
+    if (isPremium && authUser?.id) {
       setSavingSong(true)
       try {
         const newId = await upsertCloudSong(authUser.id, song)
@@ -386,16 +387,16 @@ export default function App() {
     setSongs(prev => {
       const next = prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s)
       const updated = next.find(s => s.id === id)
-      if (authUser?.id && updated) upsertCloudSong(authUser.id, updated).catch(() => {})
+      if (isPremium && authUser?.id && updated) upsertCloudSong(authUser.id, updated).catch(() => {})
       return next
     })
-  }, [authUser, setSongs])
+  }, [authUser, isPremium, setSongs])
 
   const confirmDeleteSong = useCallback(async () => {
     if (!confirmDelete) return
     const target = confirmDelete
     setConfirmDelete(null)
-    if (authUser?.id) {
+    if (isPremium && authUser?.id) {
       try { await deleteCloudSong(authUser.id, target.id) }
       catch { showToast('Não foi possível remover da nuvem. Tente novamente.'); return }
     }
@@ -406,7 +407,7 @@ export default function App() {
       if (remaining.length === 0) setScreen('songs')
     }
     showToast('🗑 Música removida do seu repertório')
-  }, [authUser, confirmDelete, currentSong, songs, setSongs, showToast])
+  }, [authUser, isPremium, confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
     if (metroRef.current) { clearInterval(metroRef.current); metroRef.current = null }
@@ -719,8 +720,20 @@ export default function App() {
   const handleCloudSync = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
     if (!isPremium) { setShowUpgrade('cloud'); return }
-    showToast('Backup na nuvem em breve — seus dados seguem salvos neste dispositivo.')
-  }, [authUser, isPremium, showToast])
+    if (!songs.length) { showToast('Você ainda não tem músicas locais para sincronizar.'); return }
+    setSavingSong(true)
+    try {
+      const ok = await syncLocalSongsToCloud(authUser.id, songs)
+      showToast(`✓ ${ok} música(s) sincronizadas com sucesso!`)
+      try { localStorage.removeItem(STORE_KEY) } catch {}
+      const cloud = await fetchUserSongs(authUser.id)
+      setSongs(cloud)
+    } catch (e) {
+      showToast('Falha ao sincronizar músicas. Tente novamente.')
+    } finally {
+      setSavingSong(false)
+    }
+  }, [authUser, isPremium, songs, setSongs, showToast])
 
   const handleCloudRestore = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
@@ -1116,6 +1129,19 @@ export default function App() {
               <button className={`tbtn premium-tbtn ${isPremium ? 'is-premium' : ''}`} onClick={openSupport} title={isPremium ? 'Assinatura Premium ativa' : 'Conheça o Premium'}>{isPremium ? '⭐' : '☕'}</button>
               <button className="tbtn" onClick={() => setShowModal(true)} title="Adicionar música">+</button>
             </div>
+            {isPremium && authUser && songs.length > 0 && (
+              <div style={{padding:'8px 12px 0'}}>
+                <button
+                  className="tbtn premium-tbtn is-premium"
+                  style={{width:'100%'}}
+                  onClick={handleCloudSync}
+                  disabled={savingSong}
+                  title="Enviar músicas locais para a nuvem"
+                >
+                  ☁️ Sincronizar músicas locais para a nuvem
+                </button>
+              </div>
+            )}
             <div id="content" style={{paddingTop:8}}>
               {welcome ? (
                 <div className="welcome welcome-premium">
