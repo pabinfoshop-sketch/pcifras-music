@@ -407,7 +407,7 @@ export default function App() {
       if (remaining.length === 0) setScreen('songs')
     }
     showToast('🗑 Música removida do seu repertório')
-  }, [authUser, confirmDelete, currentSong, songs, setSongs, showToast])
+  }, [authUser, isPremium, confirmDelete, currentSong, songs, setSongs, showToast])
 
   const stopMetro = useCallback(() => {
     if (metroRef.current) { clearInterval(metroRef.current); metroRef.current = null }
