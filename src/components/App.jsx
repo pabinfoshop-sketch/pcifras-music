@@ -369,9 +369,13 @@ export default function App() {
     setCurrentSong(toStore)
     setTranspose(0)
     setBpm(toStore.bpm || 80)
-    setScreen('view')
+    if (setlists.length > 0) {
+      setAddToSetlistSong(toStore)
+    } else {
+      setScreen('view')
+    }
     setTimeout(() => showToast('✓ Música salva no seu repertório'), 100)
-  }, [authUser, isPremium, songs.length, setSongs, showToast])
+  }, [authUser, isPremium, songs.length, setlists.length, setSongs, showToast])
 
   const handleDelete = useCallback(song => {
     setConfirmDelete(song)
@@ -611,13 +615,15 @@ export default function App() {
   }, [isPremium, setlists.length, setSetlists, showToast])
 
   const addSongToSetlist = useCallback((songId, setId) => {
-    setSetlists(prev => prev.map(sl =>
-      sl.id === setId && !sl.songIds.includes(songId)
-        ? { ...sl, songIds: [...sl.songIds, songId] }
-        : sl
-    ))
+    let name = ''
+    setSetlists(prev => prev.map(sl => {
+      if (sl.id !== setId) return sl
+      name = sl.name
+      if (sl.songIds.includes(songId)) return sl
+      return { ...sl, songIds: [...sl.songIds, songId] }
+    }))
     setAddToSetlistSong(null)
-    showToast('Música adicionada ao repertório')
+    showToast(`Música adicionada ao repertório ${name}!`)
   }, [setSetlists, showToast])
 
   const removeSongFromSetlist = useCallback((songId, setId) => {
