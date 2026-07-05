@@ -720,8 +720,20 @@ export default function App() {
   const handleCloudSync = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
     if (!isPremium) { setShowUpgrade('cloud'); return }
-    showToast('Backup na nuvem em breve — seus dados seguem salvos neste dispositivo.')
-  }, [authUser, isPremium, showToast])
+    if (!songs.length) { showToast('Você ainda não tem músicas locais para sincronizar.'); return }
+    setSavingSong(true)
+    try {
+      const ok = await syncLocalSongsToCloud(authUser.id, songs)
+      showToast(`✓ ${ok} música(s) sincronizadas com sucesso!`)
+      try { localStorage.removeItem(STORE_KEY) } catch {}
+      const cloud = await fetchUserSongs(authUser.id)
+      setSongs(cloud)
+    } catch (e) {
+      showToast('Falha ao sincronizar músicas. Tente novamente.')
+    } finally {
+      setSavingSong(false)
+    }
+  }, [authUser, isPremium, songs, setSongs, showToast])
 
   const handleCloudRestore = useCallback(async () => {
     if (!authUser) { showToast('Entre na sua conta para continuar'); return }
