@@ -18,8 +18,7 @@ import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
-import { loadCloudSongs, upsertCloudSong, deleteCloudSong } from '@/lib/cloudSongs'
-import { fetchUserSongs, syncLocalSongsToCloud } from '@/lib/songsService'
+import { fetchUserSongs, addCloudSong, deleteCloudSong, syncLocalSongsToCloud } from '@/lib/songsService'
 
 // Derives a normalized user object with premium/trial info from a Supabase profile row.
 function profileToUser(profile, sessionUser) {
@@ -297,20 +296,12 @@ export default function App() {
     setLoadingCloud(true)
     ;(async () => {
       try {
-        const cloud = await loadCloudSongs(authUser.id)
+        const cloud = await fetchUserSongs(authUser.id)
         if (cancelled) return
-        setSongs(prev => {
-          const byId = new Map()
-          cloud.forEach(s => byId.set(s.id, s))
-          prev.forEach(s => {
-            if (!byId.has(s.id)) {
-              byId.set(s.id, s)
-              upsertCloudSong(authUser.id, s).catch(() => {})
-            }
-          })
-          return Array.from(byId.values())
-        })
+        console.log('Músicas carregadas da nuvem:', cloud)
+        setSongs(cloud)
       } catch (e) {
+        console.error('[cloud load] falhou:', e)
         if (!cancelled) showToast('Não conseguimos carregar suas músicas da nuvem. Tente novamente.')
       } finally {
         if (!cancelled) setLoadingCloud(false)
@@ -353,6 +344,7 @@ export default function App() {
   }, [])
 
   const handleAdd = useCallback(async song => {
+    console.log('Salvando música, isPremium:', isPremium)
     if (!isPremium && songs.length >= FREE_SONG_LIMIT) {
       setShowModal(false)
       setShowUpgrade('songs')
@@ -363,9 +355,11 @@ export default function App() {
     if (isPremium && authUser?.id) {
       setSavingSong(true)
       try {
-        const newId = await upsertCloudSong(authUser.id, song)
+        const newId = await addCloudSong(authUser.id, song)
         if (newId && newId !== song.id) toStore = { ...song, id: newId }
+        console.log('Música salva na nuvem:', toStore)
       } catch (e) {
+        console.error('[cloud save] falhou:', e)
         showToast('Não foi possível salvar na nuvem. Salvamos localmente por enquanto.')
       } finally {
         setSavingSong(false)
@@ -387,7 +381,7 @@ export default function App() {
     setSongs(prev => {
       const next = prev.map(s => s.id === id ? { ...s, favorite: !s.favorite } : s)
       const updated = next.find(s => s.id === id)
-      if (isPremium && authUser?.id && updated) upsertCloudSong(authUser.id, updated).catch(() => {})
+      if (isPremium && authUser?.id && updated) addCloudSong(authUser.id, updated).catch(() => {})
       return next
     })
   }, [authUser, isPremium, setSongs])
