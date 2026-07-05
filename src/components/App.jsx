@@ -296,20 +296,12 @@ export default function App() {
     setLoadingCloud(true)
     ;(async () => {
       try {
-        const cloud = await loadCloudSongs(authUser.id)
+        const cloud = await fetchUserSongs(authUser.id)
         if (cancelled) return
-        setSongs(prev => {
-          const byId = new Map()
-          cloud.forEach(s => byId.set(s.id, s))
-          prev.forEach(s => {
-            if (!byId.has(s.id)) {
-              byId.set(s.id, s)
-              upsertCloudSong(authUser.id, s).catch(() => {})
-            }
-          })
-          return Array.from(byId.values())
-        })
+        console.log('Músicas carregadas da nuvem:', cloud)
+        setSongs(cloud)
       } catch (e) {
+        console.error('[cloud load] falhou:', e)
         if (!cancelled) showToast('Não conseguimos carregar suas músicas da nuvem. Tente novamente.')
       } finally {
         if (!cancelled) setLoadingCloud(false)
