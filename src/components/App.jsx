@@ -48,7 +48,7 @@ function profileToUser(profile, sessionUser) {
 
 const STORE_KEY = 'cifras_app_songs'
 const SETLISTS_KEY = 'cifras_setlists'
-const FREE_SONG_LIMIT = 5
+const FREE_SONG_LIMIT = 2
 const FREE_SETLIST_LIMIT = 1
 
 // Configuração de apoio ao projeto — edite estes valores para os seus links reais
