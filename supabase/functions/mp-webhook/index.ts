@@ -61,10 +61,11 @@ Deno.serve(async (req) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "content-type",
+        "Access-Control-Allow-Headers": "content-type, x-signature, x-request-id",
       },
     });
   }
+
 
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
