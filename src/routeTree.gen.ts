@@ -15,6 +15,7 @@ import { Route as MinhaAssinaturaRouteImport } from './routes/minha-assinatura'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as ApiFetchRouteImport } from './routes/api/fetch'
+import { Route as ApiWebhookMercadoPagoRouteImport } from './routes/api/webhook/mercado-pago'
 import { Route as ApiAudioSearchRouteImport } from './routes/api/audio.search'
 
 const TunerRoute = TunerRouteImport.update({
@@ -47,6 +48,11 @@ const ApiFetchRoute = ApiFetchRouteImport.update({
   path: '/api/fetch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhookMercadoPagoRoute = ApiWebhookMercadoPagoRouteImport.update({
+  id: '/api/webhook/mercado-pago',
+  path: '/api/webhook/mercado-pago',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAudioSearchRoute = ApiAudioSearchRouteImport.update({
   id: '/api/audio/search',
   path: '/api/audio/search',
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
+  '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
+  '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
+  '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/api/fetch'
     | '/api/search'
     | '/api/audio/search'
+    | '/api/webhook/mercado-pago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/api/fetch'
     | '/api/search'
     | '/api/audio/search'
+    | '/api/webhook/mercado-pago'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/api/fetch'
     | '/api/search'
     | '/api/audio/search'
+    | '/api/webhook/mercado-pago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   ApiFetchRoute: typeof ApiFetchRoute
   ApiSearchRoute: typeof ApiSearchRoute
   ApiAudioSearchRoute: typeof ApiAudioSearchRoute
+  ApiWebhookMercadoPagoRoute: typeof ApiWebhookMercadoPagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFetchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhook/mercado-pago': {
+      id: '/api/webhook/mercado-pago'
+      path: '/api/webhook/mercado-pago'
+      fullPath: '/api/webhook/mercado-pago'
+      preLoaderRoute: typeof ApiWebhookMercadoPagoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/audio/search': {
       id: '/api/audio/search'
       path: '/api/audio/search'
@@ -183,7 +203,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFetchRoute: ApiFetchRoute,
   ApiSearchRoute: ApiSearchRoute,
   ApiAudioSearchRoute: ApiAudioSearchRoute,
+  ApiWebhookMercadoPagoRoute: ApiWebhookMercadoPagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
