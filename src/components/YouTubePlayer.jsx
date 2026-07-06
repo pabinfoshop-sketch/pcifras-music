@@ -143,9 +143,13 @@ export default function YouTubePlayer({
     if (!songTitle) { setSearching(false); setSearchError('Sem música para buscar.'); return }
     const key = useKey ? (songKey || '') : ''
     try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData.session?.access_token
       const res = await fetch('/api/audio/search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: token
+          ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+          : { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: songTitle, artist: songArtist || '', type: mode, key }),
       })
       const data = await res.json()
