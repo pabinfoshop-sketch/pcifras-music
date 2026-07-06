@@ -59,7 +59,7 @@ export default function Modal({ onAdd, onClose, initialTab = 'search' }) {
     try {
       const res = await fetch(`${API_URL}/fetch`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await authHeaders(),
         body: JSON.stringify({ url: song.url, key: song.key }),
       })
       const data = await res.json().catch(() => ({}))
