@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { requireApiAuth } from '@/lib/api-auth'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
 const UA =
@@ -200,6 +201,8 @@ export const Route = createFileRoute('/api/audio/search')({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
       POST: async ({ request }) => {
+        const auth = await requireApiAuth(request, CORS)
+        if (auth instanceof Response) return auth
         try {
           const body = (await request.json()) as {
             title?: string

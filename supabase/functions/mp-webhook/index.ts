@@ -61,10 +61,11 @@ Deno.serve(async (req) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "content-type",
+        "Access-Control-Allow-Headers": "content-type, x-signature, x-request-id",
       },
     });
   }
+
 
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -77,6 +78,69 @@ Deno.serve(async (req) => {
     try { body = rawBody ? JSON.parse(rawBody) : {}; } catch { /* ignore */ }
 
     console.log("mp-webhook received:", { query: Object.fromEntries(url.searchParams), body });
+
+    // Verify Mercado Pago webhook signature (HMAC-SHA256).
+    // Docs: https://www.mercadopago.com.br/developers/en/docs/your-integrations/notifications/webhooks
+    const webhookSecret = Deno.env.get("MERCADO_PAGO_WEBHOOK_SECRET");
+    if (webhookSecret) {
+      const sigHeader = req.headers.get("x-signature") || "";
+      const requestId = req.headers.get("x-request-id") || "";
+      const dataIdForSig =
+        url.searchParams.get("data.id") ||
+        url.searchParams.get("id") ||
+        body?.data?.id ||
+        body?.id ||
+        "";
+
+      // x-signature is a CSV like "ts=1700000000,v1=abcdef..."
+      const parts = Object.fromEntries(
+        sigHeader.split(",").map((p) => {
+          const [k, ...rest] = p.trim().split("=");
+          return [k, rest.join("=")];
+        }),
+      ) as Record<string, string>;
+      const ts = parts["ts"];
+      const v1 = parts["v1"];
+
+      if (!ts || !v1) {
+        console.warn("mp-webhook: missing x-signature parts");
+        return new Response("Invalid signature", { status: 401 });
+      }
+
+      const manifest = `id:${dataIdForSig};request-id:${requestId};ts:${ts};`;
+      const key = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(webhookSecret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"],
+      );
+      const sigBuf = await crypto.subtle.sign(
+        "HMAC",
+        key,
+        new TextEncoder().encode(manifest),
+      );
+      const expected = Array.from(new Uint8Array(sigBuf))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      // Timing-safe compare
+      let ok = expected.length === v1.length;
+      for (let i = 0; i < expected.length && i < v1.length; i++) {
+        ok = (expected.charCodeAt(i) === v1.charCodeAt(i)) && ok;
+      }
+      if (!ok) {
+        console.warn("mp-webhook: invalid signature");
+        return new Response("Invalid signature", { status: 401 });
+      }
+    } else {
+      console.warn(
+        "mp-webhook: MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature verification. " +
+        "Set this secret to the value from the Mercado Pago webhook config to enforce verification.",
+      );
+    }
+
+
 
     // MP envia tanto via query (?type=&data.id=) quanto via body ({type, data:{id}, topic, resource})
     const type =

@@ -1,6 +1,15 @@
 import { useState, useRef } from 'react'
 import { parseCifraText } from '../utils/parser'
 import { detectKey } from '../utils/chordDiagrams'
+import { supabase } from '@/integrations/supabase/client'
+
+async function authHeaders() {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token
+    ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    : { 'Content-Type': 'application/json' }
+}
 
 export default function Modal({ onAdd, onClose, initialTab = 'search' }) {
   const [tab, setTab] = useState(initialTab)
@@ -27,7 +36,7 @@ export default function Modal({ onAdd, onClose, initialTab = 'search' }) {
     try {
       const res = await fetch(`${API_URL}/search`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await authHeaders(),
         body: JSON.stringify({ query }),
       })
       const data = await res.json().catch(() => ({}))
@@ -50,7 +59,7 @@ export default function Modal({ onAdd, onClose, initialTab = 'search' }) {
     try {
       const res = await fetch(`${API_URL}/fetch`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await authHeaders(),
         body: JSON.stringify({ url: song.url, key: song.key }),
       })
       const data = await res.json().catch(() => ({}))
