@@ -23,19 +23,37 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Verify caller identity via Supabase JWT — do NOT trust body.user_id.
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const jwt = authHeader.slice(7).trim();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnon =
+      Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnon, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data: userData, error: userErr } = await supabase.auth.getUser(jwt);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = userData.user.id;
+
     const body = await req.json().catch(() => ({}));
-    const userId: string | undefined = body?.user_id;
     const origin =
       body?.origin ||
       req.headers.get("origin") ||
       "https://pcifras-music.lovable.app";
 
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "user_id é obrigatório" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+
 
     const preference = {
       items: [
