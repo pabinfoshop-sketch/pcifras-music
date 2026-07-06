@@ -14,6 +14,7 @@ import AccountScreen from './AccountScreen'
 import ErrorBoundary from './ErrorBoundary'
 import InstallAppButton from './InstallAppButton'
 import OfflineBanner from './OfflineBanner'
+import DebugPanel from './DebugPanel'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { parseCifraText } from '../utils/parser'
 import { supabase } from '@/integrations/supabase/client'
@@ -1771,6 +1772,7 @@ export default function App() {
         />
       )}
       <Toast message={toast} />
+      <DebugPanel authUser={authUser} isPremium={isPremium} songs={songs} />
     </div>
     </ErrorBoundary>
   )
