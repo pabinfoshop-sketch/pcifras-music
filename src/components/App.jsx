@@ -1772,6 +1772,7 @@ export default function App() {
         />
       )}
       <Toast message={toast} />
+      <DebugPanel authUser={authUser} isPremium={isPremium} songs={songs} />
     </div>
     </ErrorBoundary>
   )
