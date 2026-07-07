@@ -1130,11 +1130,28 @@ export default function App() {
           <AccountScreen
             user={authUser}
             isPremium={isPremium}
+            songCount={songs.length}
+            setlistCount={setlists.length}
             onBack={() => setScreen('songs')}
             onSubscribe={() => setShowUpgrade('generic')}
             onManage={() => showToast('O portal de gerenciamento estará disponível quando a assinatura for ativada.')}
             onLogout={() => { handleLogout(); setScreen('songs') }}
+            onUpdateProfile={async (updates) => {
+              if (!authUser?.id) return
+              const { error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', authUser.id)
+              if (error) {
+                showToast('Não foi possível salvar. Tente novamente.')
+                throw error
+              }
+              // Atualiza o estado local com os novos dados
+              setAuthUser({ ...authUser, ...updates })
+              showToast('Perfil atualizado.')
+            }}
           />
+
         ) : (
           <>
             <div className="topbar">
