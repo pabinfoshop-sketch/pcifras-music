@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /minha-assinatura
+Disallow: /auth
+
+Sitemap: https://pcifras-music.lovable.app/sitemap.xml
