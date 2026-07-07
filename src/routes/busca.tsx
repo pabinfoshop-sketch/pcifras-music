@@ -1,7 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { mockSongs } from "@/lib/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import BottomNav from "@/components/BottomNav";
+
+type PublicSong = {
+  id: string;
+  title: string;
+  artist: string;
+  tone: string | null;
+  category: string | null;
+  views: number;
+};
 
 export const Route = createFileRoute("/busca")({
   head: () => ({
@@ -11,7 +21,9 @@ export const Route = createFileRoute("/busca")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({ q: typeof search.q === "string" ? search.q : "" }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: typeof search.q === "string" ? search.q : "",
+  }),
   component: BuscaPage,
 });
 
@@ -20,15 +32,24 @@ function BuscaPage() {
   const navigate = useNavigate({ from: "/busca" });
   const [term, setTerm] = useState(q);
 
-  const query = q.trim().toLowerCase();
-  const results = query
-    ? mockSongs.filter(
-        (s) =>
-          s.title.toLowerCase().includes(query) ||
-          s.artist.toLowerCase().includes(query) ||
-          s.category.toLowerCase().includes(query),
-      )
-    : [];
+  const query = q.trim();
+
+  const { data: results = [], isLoading } = useQuery({
+    queryKey: ["public_songs", "search", query],
+    enabled: query.length > 0,
+    queryFn: async (): Promise<PublicSong[]> => {
+      const escaped = query.replace(/[%_]/g, (c: string) => `\\${c}`);
+      const pattern = `%${escaped}%`;
+      const { data, error } = await supabase
+        .from("public_songs")
+        .select("id, title, artist, tone, category, views")
+        .or(`title.ilike.${pattern},artist.ilike.${pattern},category.ilike.${pattern}`)
+        .order("views", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
 
   return (
     <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-8 pb-28">
@@ -60,37 +81,42 @@ function BuscaPage() {
         </form>
 
         <div className="mt-6">
-          {query ? (
-            results.length === 0 ? (
-              <p className="text-white/60 text-sm">Nenhum resultado para "{q}".</p>
-            ) : (
-              <>
-                <p className="text-xs text-white/40 mb-3 uppercase tracking-widest">
-                  {results.length} resultado{results.length > 1 ? "s" : ""}
-                </p>
-                <ul className="space-y-3">
-                  {results.map((s) => (
-                    <li key={s.id}>
-                      <Link
-                        to="/musicas/$id"
-                        params={{ id: s.id }}
-                        className="block rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] p-4 transition"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-semibold">{s.title}</div>
-                            <div className="text-sm text-white/60">{s.artist}</div>
-                          </div>
-                          <span className="text-[#f5c451] font-bold text-sm">{s.key}</span>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )
-          ) : (
+          {!query ? (
             <p className="text-white/40 text-sm">Digite para buscar músicas.</p>
+          ) : isLoading ? (
+            <p className="text-white/60 text-sm">Buscando…</p>
+          ) : results.length === 0 ? (
+            <p className="text-white/60 text-sm">Nenhum resultado para "{q}".</p>
+          ) : (
+            <>
+              <p className="text-xs text-white/40 mb-3 uppercase tracking-widest">
+                {results.length} resultado{results.length > 1 ? "s" : ""}
+              </p>
+              <ul className="space-y-3">
+                {results.map((s) => (
+                  <li key={s.id}>
+                    <Link
+                      to="/musicas/$id"
+                      params={{ id: s.id }}
+                      className="block rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] p-4 transition"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold">{s.title}</div>
+                          <div className="text-sm text-white/60">
+                            {s.artist}
+                            {s.category ? ` · ${s.category}` : ""}
+                          </div>
+                        </div>
+                        {s.tone && (
+                          <span className="text-[#f5c451] font-bold text-sm">{s.tone}</span>
+                        )}
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </div>
       </div>
