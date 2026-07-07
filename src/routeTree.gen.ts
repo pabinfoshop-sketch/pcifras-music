@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TunerRouteImport } from './routes/tuner'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as MinhaAssinaturaRouteImport } from './routes/minha-assinatura'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,6 +24,21 @@ import { Route as ApiAudioSearchRouteImport } from './routes/api/audio.search'
 const TunerRoute = TunerRouteImport.update({
   id: '/tuner',
   path: '/tuner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanosRoute = PlanosRouteImport.update({
@@ -63,6 +81,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
   '/planos': typeof PlanosRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
@@ -73,6 +94,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
   '/planos': typeof PlanosRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
@@ -84,6 +108,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
   '/planos': typeof PlanosRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
@@ -96,6 +123,9 @@ export interface FileRouteTypes {
     | '/'
     | '/minha-assinatura'
     | '/planos'
+    | '/privacidade'
+    | '/sobre'
+    | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
@@ -106,6 +136,9 @@ export interface FileRouteTypes {
     | '/'
     | '/minha-assinatura'
     | '/planos'
+    | '/privacidade'
+    | '/sobre'
+    | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
@@ -116,6 +149,9 @@ export interface FileRouteTypes {
     | '/'
     | '/minha-assinatura'
     | '/planos'
+    | '/privacidade'
+    | '/sobre'
+    | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
@@ -127,6 +163,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MinhaAssinaturaRoute: typeof MinhaAssinaturaRoute
   PlanosRoute: typeof PlanosRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  SobreRoute: typeof SobreRoute
+  TermosRoute: typeof TermosRoute
   TunerRoute: typeof TunerRoute
   ApiFetchRoute: typeof ApiFetchRoute
   ApiSearchRoute: typeof ApiSearchRoute
@@ -141,6 +180,27 @@ declare module '@tanstack/react-router' {
       path: '/tuner'
       fullPath: '/tuner'
       preLoaderRoute: typeof TunerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planos': {
@@ -199,6 +259,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MinhaAssinaturaRoute: MinhaAssinaturaRoute,
   PlanosRoute: PlanosRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  SobreRoute: SobreRoute,
+  TermosRoute: TermosRoute,
   TunerRoute: TunerRoute,
   ApiFetchRoute: ApiFetchRoute,
   ApiSearchRoute: ApiSearchRoute,
