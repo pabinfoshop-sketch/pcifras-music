@@ -874,11 +874,13 @@ export default function App() {
   if (!authUser) {
     return (
       <>
+        <HomeSearchBar />
         <AuthScreen onAuth={handleAuth} onGoogle={handleGoogleLogin} />
         <Toast message={toast} />
       </>
     )
   }
+
 
   return (
     <ErrorBoundary>
