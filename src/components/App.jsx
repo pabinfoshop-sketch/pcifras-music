@@ -216,6 +216,8 @@ export default function App() {
         if (error) { showToast(mapError(error)); return false }
         const u = await refreshProfile(data.user)
         setShowAuth(false)
+        setScreen('songs')
+        setActiveSetlist(null)
         showToast(`Bem-vindo${u?.name ? `, ${u.name}` : ''}!`)
         return true
       } else {
@@ -287,7 +289,10 @@ export default function App() {
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') { setAuthUser(null); return }
-      if (session?.user) refreshProfile(session.user)
+      if (session?.user) {
+        refreshProfile(session.user)
+        if (event === 'SIGNED_IN') { setScreen('songs'); setShowAuth(false); setActiveSetlist(null) }
+      }
     })
     return () => { mounted = false; sub.subscription.unsubscribe() }
   }, [refreshProfile, setAuthUser])
