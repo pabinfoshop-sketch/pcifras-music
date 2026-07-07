@@ -11,7 +11,7 @@ export const Route = createFileRoute("/busca")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: (search: Record<string, unknown>) => ({ q: typeof search.q === "string" ? search.q : "" }),
   component: BuscaPage,
 });
 
