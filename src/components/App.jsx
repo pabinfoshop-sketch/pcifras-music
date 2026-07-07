@@ -9,6 +9,7 @@ import ToolsScreen from './ToolsScreen'
 import YouTubePlayer from './YouTubePlayer'
 import AuthModal from './AuthModal'
 import AuthScreen from './AuthScreen'
+import HomeSearchBar from './HomeSearchBar'
 import UpgradeModal from './UpgradeModal'
 import AccountScreen from './AccountScreen'
 import ErrorBoundary from './ErrorBoundary'
@@ -874,11 +875,13 @@ export default function App() {
   if (!authUser) {
     return (
       <>
+        <HomeSearchBar />
         <AuthScreen onAuth={handleAuth} onGoogle={handleGoogleLogin} />
         <Toast message={toast} />
       </>
     )
   }
+
 
   return (
     <ErrorBoundary>
