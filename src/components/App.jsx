@@ -80,6 +80,8 @@ export default function App() {
   const [scrollSpeed, setScrollSpeed] = useState(3)
   const [activeSetlist, setActiveSetlist] = useState(null)
   const [renamingSetlist, setRenamingSetlist] = useState(null)
+  const [dragIdx, setDragIdx] = useState(null) // índice em drag no setlist
+  const [dragOverIdx, setDragOverIdx] = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [addToSetlistSong, setAddToSetlistSong] = useState(null)
   const [showCreateSetlist, setShowCreateSetlist] = useState(false)
