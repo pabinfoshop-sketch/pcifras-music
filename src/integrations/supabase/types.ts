@@ -6,22 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type SubscriptionStatus = 'free' | 'premium' | 'canceled' | 'pending' | 'trial';
-
-export type Profile = {
-  created_at: string;
-  email: string | null;
-  id: string;
-  is_premium: boolean;
-  name: string | null;
-  premium: boolean;
-  premium_until: string | null;
-  subscription_expires_at: string | null;
-  subscription_status: SubscriptionStatus;
-  trial_ends_at: string | null;
-  updated_at: string;
-};
-
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -115,7 +99,6 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
-          is_premium: boolean
           name: string | null
           premium: boolean
           premium_until: string | null
@@ -128,7 +111,6 @@ export type Database = {
           created_at?: string
           email?: string | null
           id: string
-          is_premium?: boolean
           name?: string | null
           premium?: boolean
           premium_until?: string | null
@@ -141,7 +123,6 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
-          is_premium?: boolean
           name?: string | null
           premium?: boolean
           premium_until?: string | null
