@@ -80,6 +80,8 @@ export default function App() {
   const [scrollSpeed, setScrollSpeed] = useState(3)
   const [activeSetlist, setActiveSetlist] = useState(null)
   const [renamingSetlist, setRenamingSetlist] = useState(null)
+  const [dragIdx, setDragIdx] = useState(null) // índice em drag no setlist
+  const [dragOverIdx, setDragOverIdx] = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [addToSetlistSong, setAddToSetlistSong] = useState(null)
   const [showCreateSetlist, setShowCreateSetlist] = useState(false)
@@ -665,6 +667,43 @@ export default function App() {
     }))
   }, [setSetlists])
 
+  // Reordena músicas de um repertório por índice (drag-and-drop)
+  const reorderSetlistSongs = useCallback((setId, fromIdx, toIdx) => {
+    if (fromIdx === toIdx) return
+    setSetlists(prev => prev.map(sl => {
+      if (sl.id !== setId) return sl
+      if (fromIdx < 0 || fromIdx >= sl.songIds.length) return sl
+      if (toIdx < 0 || toIdx >= sl.songIds.length) return sl
+      const ids = [...sl.songIds]
+      const [moved] = ids.splice(fromIdx, 1)
+      ids.splice(toIdx, 0, moved)
+      return { ...sl, songIds: ids }
+    }))
+  }, [setSetlists])
+
+  // Exporta um repertório como texto (share/clipboard)
+  const exportSetlist = useCallback(async (setlist, setlistSongsList) => {
+    if (!setlist) return
+    const header = `🎵 ${setlist.name}\n${'─'.repeat(Math.min(setlist.name.length + 3, 30))}\n`
+    const lines = setlistSongsList.map((s, i) => {
+      const key = s.key ? ` [${s.key}]` : ''
+      const artist = s.artist ? ` — ${s.artist}` : ''
+      return `${i + 1}. ${s.title}${artist}${key}`
+    }).join('\n')
+    const footer = `\n\n${setlistSongsList.length} ${setlistSongsList.length === 1 ? 'música' : 'músicas'} · pCifras`
+    const text = header + lines + footer
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: setlist.name, text })
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text)
+        showToast('Repertório copiado!')
+      }
+    } catch (err) {
+      if (err && err.name !== 'AbortError') showToast('Não foi possível exportar')
+    }
+  }, [showToast])
+
   const navigateInSetlist = useCallback(dir => {
     if (!activeSetlist || !currentSong) return
     const idx = activeSetlist.songIds.indexOf(currentSong.id)
@@ -1091,28 +1130,53 @@ export default function App() {
                   <div className="topbar-title" onClick={() => renameSetlistStart(activeSetlist)} style={{cursor:'pointer'}}>{activeSetlist.name}</div>
                 </>
               )}
-              <button className="tbtn" onClick={() => { setScreen('view'); if (setlistSongs[0]) handleSelect(setlistSongs[0]) }}>▶</button>
-              <button className="tbtn" onClick={() => deleteSetlist(activeSetlist.id)}>🗑</button>
+              <button className="tbtn" onClick={() => { setScreen('view'); if (setlistSongs[0]) handleSelect(setlistSongs[0]) }} title="Modo apresentação">▶</button>
+              <button className="tbtn" onClick={() => exportSetlist(activeSetlist, setlistSongs)} title="Exportar repertório">📤</button>
+              <button className="tbtn" onClick={() => deleteSetlist(activeSetlist.id)} title="Excluir">🗑</button>
             </div>
             <div id="content">
               {setlistSongs.length === 0 ? (
                 <div className="empty-list">Este repertório ainda está vazio.<br />Adicione músicas pelo ícone 📋 ao lado de cada uma.</div>
               ) : (
-                <div className="song-list">
-                  {setlistSongs.map((s, i) => (
-                    <div key={s.id} className="song-card">
-                      <span className="setlist-idx">{i + 1}.</span>
-                      <div className="song-card-info" onClick={() => handleSelect(s)}>
-                        <div className="song-card-name">{s.title}</div>
-                        {s.artist && <div className="song-card-artist">{s.artist}</div>}
+                <>
+                  <div className="keyboard-hint" style={{padding:'6px 12px',opacity:0.7}}>
+                    Arraste para reordenar · toque ▶ para modo apresentação
+                  </div>
+                  <div className="song-list">
+                    {setlistSongs.map((s, i) => (
+                      <div
+                        key={s.id}
+                        className="song-card"
+                        draggable
+                        onDragStart={(e) => { setDragIdx(i); e.dataTransfer.effectAllowed = 'move' }}
+                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (dragOverIdx !== i) setDragOverIdx(i) }}
+                        onDragLeave={() => { if (dragOverIdx === i) setDragOverIdx(null) }}
+                        onDrop={(e) => {
+                          e.preventDefault()
+                          if (dragIdx !== null && dragIdx !== i) reorderSetlistSongs(activeSetlist.id, dragIdx, i)
+                          setDragIdx(null); setDragOverIdx(null)
+                        }}
+                        onDragEnd={() => { setDragIdx(null); setDragOverIdx(null) }}
+                        style={{
+                          opacity: dragIdx === i ? 0.4 : 1,
+                          borderTop: dragOverIdx === i && dragIdx !== null && dragIdx > i ? '2px solid #f5c451' : undefined,
+                          borderBottom: dragOverIdx === i && dragIdx !== null && dragIdx < i ? '2px solid #f5c451' : undefined,
+                          cursor: 'grab',
+                        }}
+                      >
+                        <span className="setlist-idx" title="Arraste para reordenar" style={{cursor:'grab'}}>⋮⋮ {i + 1}.</span>
+                        <div className="song-card-info" onClick={() => handleSelect(s)}>
+                          <div className="song-card-name">{s.title}</div>
+                          {s.artist && <div className="song-card-artist">{s.artist}</div>}
+                        </div>
+                        <span className="song-card-key">{s.key}</span>
+                        <button className="song-card-del" onClick={() => moveSongInSetlist(activeSetlist.id, s.id, -1)} title="Subir">▲</button>
+                        <button className="song-card-del" onClick={() => moveSongInSetlist(activeSetlist.id, s.id, 1)} title="Descer">▼</button>
+                        <button className="song-card-del" onClick={() => removeSongFromSetlist(s.id, activeSetlist.id)} title="Remover">✕</button>
                       </div>
-                      <span className="song-card-key">{s.key}</span>
-                      <button className="song-card-del" onClick={() => moveSongInSetlist(activeSetlist.id, s.id, -1)}>▲</button>
-                      <button className="song-card-del" onClick={() => moveSongInSetlist(activeSetlist.id, s.id, 1)}>▼</button>
-                      <button className="song-card-del" onClick={() => removeSongFromSetlist(s.id, activeSetlist.id)}>✕</button>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </>
