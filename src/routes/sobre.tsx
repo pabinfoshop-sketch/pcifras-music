@@ -74,9 +74,9 @@ function SobrePage() {
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 mb-10">
           <h2 className="text-xl font-bold mb-3">Contato</h2>
           <ul className="text-white/70 text-sm space-y-2">
-            <li>📧 <a className="text-[#f5c451] underline" href="mailto:contato@pcifras.com">contato@pcifras.com</a></li>
-            <li>🛟 <a className="text-[#f5c451] underline" href="mailto:suporte@pcifras.com">suporte@pcifras.com</a></li>
-            <li>🔒 <a className="text-[#f5c451] underline" href="mailto:privacidade@pcifras.com">privacidade@pcifras.com</a></li>
+            <li>📧 <a className="text-[#f5c451] underline" href="mailto:pabinfoshop@gmail.com">contato@pcifras.com</a></li>
+            <li>🛟 <a className="text-[#f5c451] underline" href="mailto:pabinfoshop@gmail.com">suporte@pcifras.com</a></li>
+            <li>🔒 <a className="text-[#f5c451] underline" href="mailto:pabinfoshop@gmail.com">privacidade@pcifras.com</a></li>
           </ul>
         </section>
 

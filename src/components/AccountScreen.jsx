@@ -45,7 +45,7 @@ export default function AccountScreen({
   }
 
   const handleRestore = onRestore || (() => window.location.reload())
-  const handleSupport = onSupport || (() => window.open('mailto:suporte@pcifras.app', '_blank'))
+  const handleSupport = onSupport || (() => window.open('mailto:pabinfoshop@gmail.com', '_blank'))
   const handlePolicies = onPolicies || (() => window.open('https://pcifras-music.lovable.app', '_blank'))
 
   const benefits = [

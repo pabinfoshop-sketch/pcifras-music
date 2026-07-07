@@ -62,7 +62,7 @@ function TermosPage() {
           </section>
           <section>
             <h2 className="text-lg font-bold text-white mb-2">9. Contato</h2>
-            <p>Dúvidas: <a className="text-[#f5c451] underline" href="mailto:contato@pcifras.com">contato@pcifras.com</a></p>
+            <p>Dúvidas: <a className="text-[#f5c451] underline" href="mailto:pabinfoshop@gmail.com">contato@pcifras.com</a></p>
           </section>
         </div>
 

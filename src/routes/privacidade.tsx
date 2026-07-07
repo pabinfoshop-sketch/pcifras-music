@@ -66,7 +66,7 @@ function PrivacidadePage() {
           </section>
           <section>
             <h2 className="text-lg font-bold text-white mb-2">10. Encarregado (DPO)</h2>
-            <p>Contato para questões de privacidade: <a className="text-[#f5c451] underline" href="mailto:privacidade@pcifras.com">privacidade@pcifras.com</a></p>
+            <p>Contato para questões de privacidade: <a className="text-[#f5c451] underline" href="mailto:pabinfoshop@gmail.com">privacidade@pcifras.com</a></p>
           </section>
         </div>
 
