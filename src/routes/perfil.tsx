@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubscription } from "@/hooks/useSubscription";
+import BottomNav from "@/components/BottomNav";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -46,7 +47,7 @@ function PerfilPage() {
   const initials = (user.name || user.email || "?").slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10">
+    <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10 pb-28">
       <div className="max-w-xl mx-auto">
         <Link to="/" className="text-sm text-white/60 hover:text-white">← Voltar</Link>
 
@@ -98,6 +99,7 @@ function PerfilPage() {
           Sair da conta
         </button>
       </div>
+      <BottomNav />
     </div>
   );
 }

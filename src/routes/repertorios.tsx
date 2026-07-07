@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { mockRepertoires, mockSongs } from "@/lib/mockData";
+import BottomNav from "@/components/BottomNav";
 
 export const Route = createFileRoute("/repertorios")({
   head: () => ({
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/repertorios")({
 
 function RepertoriosPage() {
   return (
-    <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10">
+    <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10 pb-28">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="text-sm text-white/60 hover:text-white">← Voltar</Link>
@@ -42,6 +43,7 @@ function RepertoriosPage() {
           })}
         </div>
       </div>
+      <BottomNav />
     </div>
   );
 }
