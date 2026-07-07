@@ -287,7 +287,10 @@ export default function App() {
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') { setAuthUser(null); return }
-      if (session?.user) refreshProfile(session.user)
+      if (session?.user) {
+        refreshProfile(session.user)
+        if (event === 'SIGNED_IN') { setScreen('songs'); setShowAuth(false); setActiveSetlist(null) }
+      }
     })
     return () => { mounted = false; sub.subscription.unsubscribe() }
   }, [refreshProfile, setAuthUser])
