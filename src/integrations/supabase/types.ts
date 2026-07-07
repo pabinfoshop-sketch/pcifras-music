@@ -169,6 +169,72 @@ export type Database = {
         }
         Relationships: []
       }
+      repertoire_songs: {
+        Row: {
+          created_at: string
+          id: string
+          position: number
+          repertoire_id: string
+          song_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          position?: number
+          repertoire_id: string
+          song_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          position?: number
+          repertoire_id?: string
+          song_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repertoire_songs_repertoire_id_fkey"
+            columns: ["repertoire_id"]
+            isOneToOne: false
+            referencedRelation: "repertoires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repertoire_songs_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "public_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repertoires: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       repertorios: {
         Row: {
           criado_em: string
