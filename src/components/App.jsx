@@ -665,6 +665,43 @@ export default function App() {
     }))
   }, [setSetlists])
 
+  // Reordena músicas de um repertório por índice (drag-and-drop)
+  const reorderSetlistSongs = useCallback((setId, fromIdx, toIdx) => {
+    if (fromIdx === toIdx) return
+    setSetlists(prev => prev.map(sl => {
+      if (sl.id !== setId) return sl
+      if (fromIdx < 0 || fromIdx >= sl.songIds.length) return sl
+      if (toIdx < 0 || toIdx >= sl.songIds.length) return sl
+      const ids = [...sl.songIds]
+      const [moved] = ids.splice(fromIdx, 1)
+      ids.splice(toIdx, 0, moved)
+      return { ...sl, songIds: ids }
+    }))
+  }, [setSetlists])
+
+  // Exporta um repertório como texto (share/clipboard)
+  const exportSetlist = useCallback(async (setlist, setlistSongsList) => {
+    if (!setlist) return
+    const header = `🎵 ${setlist.name}\n${'─'.repeat(Math.min(setlist.name.length + 3, 30))}\n`
+    const lines = setlistSongsList.map((s, i) => {
+      const key = s.key ? ` [${s.key}]` : ''
+      const artist = s.artist ? ` — ${s.artist}` : ''
+      return `${i + 1}. ${s.title}${artist}${key}`
+    }).join('\n')
+    const footer = `\n\n${setlistSongsList.length} ${setlistSongsList.length === 1 ? 'música' : 'músicas'} · pCifras`
+    const text = header + lines + footer
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: setlist.name, text })
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text)
+        showToast('Repertório copiado!')
+      }
+    } catch (err) {
+      if (err && err.name !== 'AbortError') showToast('Não foi possível exportar')
+    }
+  }, [showToast])
+
   const navigateInSetlist = useCallback(dir => {
     if (!activeSetlist || !currentSong) return
     const idx = activeSetlist.songIds.indexOf(currentSong.id)
