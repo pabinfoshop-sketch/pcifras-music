@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { mockSongs } from "@/lib/mockData";
 
-export const Route = createFileRoute("/musicas")({
+export const Route = createFileRoute("/musicas/")({
   head: () => ({
     meta: [
       { title: "Músicas — pCifras" },

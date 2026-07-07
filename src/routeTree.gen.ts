@@ -12,11 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TunerRouteImport } from './routes/tuner'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as RepertoriosRouteImport } from './routes/repertorios'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
+import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as MinhaAssinaturaRouteImport } from './routes/minha-assinatura'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MusicasIndexRouteImport } from './routes/musicas.index'
+import { Route as MusicasIdRouteImport } from './routes/musicas.$id'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as ApiFetchRouteImport } from './routes/api/fetch'
 import { Route as ApiWebhookMercadoPagoRouteImport } from './routes/api/webhook/mercado-pago'
@@ -37,6 +41,11 @@ const SobreRoute = SobreRouteImport.update({
   path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RepertoriosRoute = RepertoriosRouteImport.update({
+  id: '/repertorios',
+  path: '/repertorios',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
   id: '/privacidade',
   path: '/privacidade',
@@ -45,6 +54,11 @@ const PrivacidadeRoute = PrivacidadeRouteImport.update({
 const PlanosRoute = PlanosRouteImport.update({
   id: '/planos',
   path: '/planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinhaAssinaturaRoute = MinhaAssinaturaRouteImport.update({
@@ -60,6 +74,16 @@ const AuthRoute = AuthRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MusicasIndexRoute = MusicasIndexRouteImport.update({
+  id: '/musicas/',
+  path: '/musicas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MusicasIdRoute = MusicasIdRouteImport.update({
+  id: '/musicas/$id',
+  path: '/musicas/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
@@ -87,13 +111,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/repertorios': typeof RepertoriosRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
+  '/musicas/$id': typeof MusicasIdRoute
+  '/musicas/': typeof MusicasIndexRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
   '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
@@ -101,13 +129,17 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/repertorios': typeof RepertoriosRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
+  '/musicas/$id': typeof MusicasIdRoute
+  '/musicas': typeof MusicasIndexRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
   '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
@@ -116,13 +148,17 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/minha-assinatura': typeof MinhaAssinaturaRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/repertorios': typeof RepertoriosRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/tuner': typeof TunerRoute
   '/api/fetch': typeof ApiFetchRoute
   '/api/search': typeof ApiSearchRoute
+  '/musicas/$id': typeof MusicasIdRoute
+  '/musicas/': typeof MusicasIndexRoute
   '/api/audio/search': typeof ApiAudioSearchRoute
   '/api/webhook/mercado-pago': typeof ApiWebhookMercadoPagoRoute
 }
@@ -132,13 +168,17 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/minha-assinatura'
+    | '/perfil'
     | '/planos'
     | '/privacidade'
+    | '/repertorios'
     | '/sobre'
     | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
+    | '/musicas/$id'
+    | '/musicas/'
     | '/api/audio/search'
     | '/api/webhook/mercado-pago'
   fileRoutesByTo: FileRoutesByTo
@@ -146,13 +186,17 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/minha-assinatura'
+    | '/perfil'
     | '/planos'
     | '/privacidade'
+    | '/repertorios'
     | '/sobre'
     | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
+    | '/musicas/$id'
+    | '/musicas'
     | '/api/audio/search'
     | '/api/webhook/mercado-pago'
   id:
@@ -160,13 +204,17 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/minha-assinatura'
+    | '/perfil'
     | '/planos'
     | '/privacidade'
+    | '/repertorios'
     | '/sobre'
     | '/termos'
     | '/tuner'
     | '/api/fetch'
     | '/api/search'
+    | '/musicas/$id'
+    | '/musicas/'
     | '/api/audio/search'
     | '/api/webhook/mercado-pago'
   fileRoutesById: FileRoutesById
@@ -175,13 +223,17 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   MinhaAssinaturaRoute: typeof MinhaAssinaturaRoute
+  PerfilRoute: typeof PerfilRoute
   PlanosRoute: typeof PlanosRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
+  RepertoriosRoute: typeof RepertoriosRoute
   SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
   TunerRoute: typeof TunerRoute
   ApiFetchRoute: typeof ApiFetchRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  MusicasIdRoute: typeof MusicasIdRoute
+  MusicasIndexRoute: typeof MusicasIndexRoute
   ApiAudioSearchRoute: typeof ApiAudioSearchRoute
   ApiWebhookMercadoPagoRoute: typeof ApiWebhookMercadoPagoRoute
 }
@@ -209,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/repertorios': {
+      id: '/repertorios'
+      path: '/repertorios'
+      fullPath: '/repertorios'
+      preLoaderRoute: typeof RepertoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacidade': {
       id: '/privacidade'
       path: '/privacidade'
@@ -221,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/planos'
       fullPath: '/planos'
       preLoaderRoute: typeof PlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/minha-assinatura': {
@@ -242,6 +308,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/musicas/': {
+      id: '/musicas/'
+      path: '/musicas'
+      fullPath: '/musicas/'
+      preLoaderRoute: typeof MusicasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/musicas/$id': {
+      id: '/musicas/$id'
+      path: '/musicas/$id'
+      fullPath: '/musicas/$id'
+      preLoaderRoute: typeof MusicasIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/search': {
@@ -279,13 +359,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   MinhaAssinaturaRoute: MinhaAssinaturaRoute,
+  PerfilRoute: PerfilRoute,
   PlanosRoute: PlanosRoute,
   PrivacidadeRoute: PrivacidadeRoute,
+  RepertoriosRoute: RepertoriosRoute,
   SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
   TunerRoute: TunerRoute,
   ApiFetchRoute: ApiFetchRoute,
   ApiSearchRoute: ApiSearchRoute,
+  MusicasIdRoute: MusicasIdRoute,
+  MusicasIndexRoute: MusicasIndexRoute,
   ApiAudioSearchRoute: ApiAudioSearchRoute,
   ApiWebhookMercadoPagoRoute: ApiWebhookMercadoPagoRoute,
 }
