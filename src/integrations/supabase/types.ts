@@ -133,6 +133,42 @@ export type Database = {
         }
         Relationships: []
       }
+      public_songs: {
+        Row: {
+          artist: string
+          category: string | null
+          content: string
+          created_at: string
+          difficulty: string | null
+          id: string
+          title: string
+          tone: string | null
+          views: number
+        }
+        Insert: {
+          artist: string
+          category?: string | null
+          content: string
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          title: string
+          tone?: string | null
+          views?: number
+        }
+        Update: {
+          artist?: string
+          category?: string | null
+          content?: string
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          title?: string
+          tone?: string | null
+          views?: number
+        }
+        Relationships: []
+      }
       repertorios: {
         Row: {
           criado_em: string
