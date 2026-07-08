@@ -247,7 +247,7 @@ export default function App() {
             return true
           }
         } catch {}
-        showToast('Conta criada! Verifique seu email para confirmar antes de entrar.')
+        showToast(`📧 Enviamos um email de confirmação para ${cleanEmail}. Clique no link para ativar sua conta.`, 6000)
         return false
       }
     } catch (e) {
