@@ -3,7 +3,8 @@ import { useState, useMemo } from "react";
 import { mockSongs } from "@/lib/mockData";
 import { transposeChord } from "@/utils/chords";
 import BottomNav from "@/components/BottomNav";
-import { Heart, Share2, Maximize, X } from "lucide-react";
+import { Heart, Share2, Maximize, X, Download } from "lucide-react";
+import { jsPDF } from "jspdf";
 
 export const Route = createFileRoute("/musicas/$id")({
   head: ({ params }) => {
@@ -62,6 +63,22 @@ function SongDetailPage() {
         alert("Link copiado!");
       }
     } catch {}
+  }
+
+  function exportPDF() {
+    const doc = new jsPDF();
+    doc.setFontSize(24);
+    doc.text(song.title, 20, 30);
+    doc.setFontSize(14);
+    doc.text(song.artist, 20, 40);
+    doc.setFontSize(12);
+    doc.text(`Tom: ${currentKey}`, 20, 50);
+    const plain = cifra.replace(/\[([^\]]+)\]/g, "$1");
+    const lines = doc.splitTextToSize(plain, 170);
+    doc.text(lines, 20, 70);
+    doc.setFontSize(10);
+    doc.text("Gerado por pCifras", 20, 285);
+    doc.save(`${song.title} - ${song.artist}.pdf`);
   }
 
   if (stage) {
@@ -139,6 +156,14 @@ function SongDetailPage() {
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-white/[0.05] border border-white/10 hover:bg-white/10"
           >
             <Share2 size={16} /> Compartilhar
+          </button>
+
+          <button
+            type="button"
+            onClick={exportPDF}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-white/[0.05] border border-white/10 hover:bg-white/10"
+          >
+            <Download size={16} /> PDF
           </button>
 
           <button
