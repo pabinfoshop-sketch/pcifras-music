@@ -26,7 +26,8 @@ function PerfilPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
-        window.location.href = "/auth?next=/perfil";
+        setUser({ id: "demo", email: "visitante@pcifras.com", name: "Visitante", avatar: null });
+        setReady(true);
         return;
       }
       const meta = data.user.user_metadata || {};

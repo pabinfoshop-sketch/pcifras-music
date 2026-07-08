@@ -1,17 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useMemo } from "react";
+import { mockSongs } from "@/lib/mockData";
 import BottomNav from "@/components/BottomNav";
-
-type PublicSong = {
-  id: string;
-  title: string;
-  artist: string;
-  tone: string | null;
-  category: string | null;
-  views: number;
-};
 
 export const Route = createFileRoute("/busca")({
   head: () => ({
@@ -32,24 +22,17 @@ function BuscaPage() {
   const navigate = useNavigate({ from: "/busca" });
   const [term, setTerm] = useState(q);
 
-  const query = q.trim();
+  const query = q.trim().toLowerCase();
 
-  const { data: results = [], isLoading } = useQuery({
-    queryKey: ["public_songs", "search", query],
-    enabled: query.length > 0,
-    queryFn: async (): Promise<PublicSong[]> => {
-      const escaped = query.replace(/[%_]/g, (c: string) => `\\${c}`);
-      const pattern = `%${escaped}%`;
-      const { data, error } = await supabase
-        .from("public_songs")
-        .select("id, title, artist, tone, category, views")
-        .or(`title.ilike.${pattern},artist.ilike.${pattern},category.ilike.${pattern}`)
-        .order("views", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
+  const results = useMemo(() => {
+    if (!query) return [];
+    return mockSongs.filter(
+      (s) =>
+        s.title.toLowerCase().includes(query) ||
+        s.artist.toLowerCase().includes(query) ||
+        s.category.toLowerCase().includes(query),
+    );
+  }, [query]);
 
   return (
     <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-8 pb-28">
@@ -83,8 +66,6 @@ function BuscaPage() {
         <div className="mt-6">
           {!query ? (
             <p className="text-white/40 text-sm">Digite para buscar músicas.</p>
-          ) : isLoading ? (
-            <p className="text-white/60 text-sm">Buscando…</p>
           ) : results.length === 0 ? (
             <p className="text-white/60 text-sm">Nenhum resultado para "{q}".</p>
           ) : (
@@ -108,8 +89,8 @@ function BuscaPage() {
                             {s.category ? ` · ${s.category}` : ""}
                           </div>
                         </div>
-                        {s.tone && (
-                          <span className="text-[#f5c451] font-bold text-sm">{s.tone}</span>
+                        {s.key && (
+                          <span className="text-[#f5c451] font-bold text-sm">{s.key}</span>
                         )}
                       </div>
                     </Link>

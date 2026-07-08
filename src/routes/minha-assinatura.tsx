@@ -45,11 +45,7 @@ function MinhaAssinaturaPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        window.location.href = "/auth?next=/minha-assinatura";
-        return;
-      }
-      setEmail(data.user.email ?? null);
+      setEmail(data.user?.email ?? null);
     });
   }, []);
 
