@@ -4559,7 +4559,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 /* ============ PREMIUM POLISH v2 ============ */
 /* Refined topbar */
 .topbar{
-  background: linear-gradient(180deg, rgba(20,20,43,0.92), rgba(13,13,28,0.85));
+  background: linear-gradient(180deg, rgba(20,20,43,0.98), rgba(13,13,28,0.94));
   backdrop-filter: saturate(140%) blur(14px);
   -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
@@ -4842,7 +4842,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .welcome-premium{
   max-width: 460px;
   margin: 0 auto;
-  padding: 28px 20px 40px;
+  padding: 40px 20px 44px;
   text-align: center;
 }
 .welcome-premium .welcome-icon{

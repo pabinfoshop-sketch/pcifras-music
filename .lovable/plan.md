@@ -1,48 +1,23 @@
-## Plano: Novo logo PCifras na tela de login e favicon
+## Problema
 
-### O que será feito
-Substituir o wordmark "🎸 PCifras" na tela de login pela imagem do logo enviada, mantendo o texto "PCifras" como nome da marca acima do subtítulo "Cifras & Repertórios". Atualizar também o favicon do site para usar o mesmo logo.
+Na home, o topo do título "O app do músico moderno." fica escondido/cortado atrás do header (topbar com fundo translúcido e `backdrop-filter`). O `#content` começa colado no topbar e, com o padding atual (`padding-top: 8px` inline + `padding: 20px 16px 100px` do CSS), a primeira linha da hero acaba visualmente encostando/entrando na área do header em telas pequenas.
 
-### Layout final na tela de login
+## Correção
 
-```text
-┌─────────────────────────┐
-│                         │
-│   [imagem logo PCifras] │
-│                         │
-│        PCifras          │
-│   CIFRAS & REPERTÓRIOS  │
-│                         │
-│   Acesse suas cifras... │
-│   [Continuar com Google]│
-│          ...            │
-└─────────────────────────┘
-```
+Editar apenas CSS/estilos de apresentação — nenhuma mudança de lógica.
 
-### Passos técnicos
+1. **`src/styles.css` — bloco `.welcome-premium`** (linha ~4842): aumentar o `padding-top` para dar respiro entre topbar e o título da hero.
+   - `padding: 28px 20px 40px;` → `padding: 40px 20px 44px;` (e `48px` em telas ≥ 640px via media query já existente, se necessário).
 
-1. **Subir a imagem para o CDN (Lovable Assets)**
-   - Origem: `user-uploads://IMG_20260624_211155-2.jpg`
-   - Criar ponteiro `src/assets/pcifras-logo.jpg.asset.json`
-   - Não deixar o binário da imagem dentro do repositório
+2. **`src/styles.css` — `.topbar` refinado** (linha ~4561): reforçar a separação visual para o conteúdo não "vazar" atrás quando houver scroll.
+   - Aumentar levemente a opacidade do gradiente de fundo (`0.92 → 0.98` e `0.85 → 0.94`) para o header ficar mais sólido.
+   - Manter o `border-bottom` já existente.
 
-2. **Alterar `src/components/AuthScreen.jsx`**
-   - Trocar o `<h1 className="auth-screen-wordmark">🎸 PCifras</h1>` por `<img>` usando o asset do CDN
-   - Inserir "PCifras" como texto acima da eyebrow "Cifras & Repertórios"
-   - Manter formulário, botões Google/email, textos e restante da página inalterados
+3. **`src/routes/index.tsx` / render da home em `App.jsx`** (não editar lógica): no `#content` inline style, trocar `paddingTop: 8` por `paddingTop: 16` para garantir folga mínima abaixo do header.
 
-3. **Ajustar `src/styles.css`**
-   - Adicionar estilos para a imagem do logo (tamanho, espaçamento, sombra suave)
-   - Ajustar espaçamento entre logo, texto "PCifras" e "Cifras & Repertórios"
-   - Manter o tema dark e cores atuais
+Nada mais é alterado — sem mexer em rotas, dados, auth ou componentes de negócio.
 
-4. **Atualizar favicon**
-   - Remover `public/favicon.ico` padrão
-   - Adicionar link no `src/routes/__root.tsx` apontando para a mesma URL do asset do logo
+## Verificação
 
-5. **Verificar**
-   - Conferir visualmente na preview se o logo e favicon aparecem corretamente
-   - Garantir que build não quebre (imports resolvidos, `<Outlet />` preservado em `__root.tsx`)
-
-### Observação
-A imagem enviada tem detalhes ricos (violão, acordeão, palheta dourada). Para favicon de 16–32 px o navegador vai reduzir a imagem; se a leitura do "PC" ficar ruim, posso gerar uma versão simplificada do favicon em seguida.
+- Recarregar preview em viewport mobile (Kiwi/Chrome mobile ~412px) e confirmar que "O app do músico moderno." aparece inteiro, sem clipping, logo abaixo do header.
+- Conferir que o header continua legível (logo + PRO + botões ⭐ / +) e que não há regressão em outras telas (Repertórios, Ferramentas, Perfil) — o padding extra é escopado a `.welcome-premium`.

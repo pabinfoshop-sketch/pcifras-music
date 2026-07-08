@@ -1251,7 +1251,7 @@ export default function App() {
                 </button>
               </div>
             )}
-            <div id="content" style={{paddingTop:8}}>
+            <div id="content" style={{paddingTop:16}}>
               {welcome ? (
                 <div className="welcome welcome-premium">
                   <div className="welcome-icon">♫</div>
