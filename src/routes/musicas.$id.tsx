@@ -65,8 +65,9 @@ function SongDetailPage() {
   }
 
   if (stage) {
+    const parts = cifra.split(/(\[[^\]]+\])/g);
     return (
-      <div className="fixed inset-0 z-50 bg-[#0b0d12] text-white overflow-auto">
+      <div className="fixed inset-0 z-50 bg-black text-white overflow-auto">
         <button
           type="button"
           onClick={() => {
@@ -78,14 +79,21 @@ function SongDetailPage() {
         >
           <X size={20} />
         </button>
-        <div className="px-6 py-10 max-w-4xl mx-auto">
+        <div className="px-6 py-10 max-w-5xl mx-auto">
           <h1 className="text-4xl font-extrabold">{song.title}</h1>
           <p className="text-white/60 mt-1">{song.artist} · Tom {currentKey}</p>
-          <pre className="whitespace-pre-wrap font-mono text-xl mt-6 leading-loose">{cifra}</pre>
+          <pre className="whitespace-pre-wrap font-mono text-[2.5rem] leading-[3rem] mt-6">
+            {parts.map((p, i) =>
+              p.startsWith("[") && p.endsWith("]")
+                ? <span key={i} className="text-[#f5c451] font-bold">{p.slice(1, -1)}</span>
+                : <span key={i}>{p}</span>
+            )}
+          </pre>
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-[#0b0d12] text-white px-5 py-10 pb-28">
