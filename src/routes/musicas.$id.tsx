@@ -65,6 +65,22 @@ function SongDetailPage() {
     } catch {}
   }
 
+  function exportPDF() {
+    const doc = new jsPDF();
+    doc.setFontSize(24);
+    doc.text(song.title, 20, 30);
+    doc.setFontSize(14);
+    doc.text(song.artist, 20, 40);
+    doc.setFontSize(12);
+    doc.text(`Tom: ${currentKey}`, 20, 50);
+    const plain = cifra.replace(/\[([^\]]+)\]/g, "$1");
+    const lines = doc.splitTextToSize(plain, 170);
+    doc.text(lines, 20, 70);
+    doc.setFontSize(10);
+    doc.text("Gerado por pCifras", 20, 285);
+    doc.save(`${song.title} - ${song.artist}.pdf`);
+  }
+
   if (stage) {
     const parts = cifra.split(/(\[[^\]]+\])/g);
     return (
