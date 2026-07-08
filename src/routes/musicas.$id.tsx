@@ -3,7 +3,9 @@ import { useState, useMemo } from "react";
 import { mockSongs } from "@/lib/mockData";
 import { transposeChord } from "@/utils/chords";
 import BottomNav from "@/components/BottomNav";
-import { Heart, Share2, Maximize, X } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
+import { Heart, Share2, Maximize, X, Download } from "lucide-react";
+import { jsPDF } from "jspdf";
 
 export const Route = createFileRoute("/musicas/$id")({
   head: ({ params }) => {
