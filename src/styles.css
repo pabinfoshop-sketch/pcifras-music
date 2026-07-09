@@ -4559,12 +4559,17 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 /* ============ PREMIUM POLISH v2 ============ */
 /* Refined topbar */
 .topbar{
-  background: linear-gradient(180deg, rgba(20,20,43,0.98), rgba(13,13,28,0.94));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(20,20,43,1), rgba(13,13,28,0.98));
   backdrop-filter: saturate(140%) blur(14px);
   -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
   padding-top: calc(10px + var(--safe-top));
+  isolation: isolate;
 }
+
 .topbar-title{
   font-weight: 700;
   font-size: 1.02rem;
