@@ -1,6 +1,9 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm ci && npm run build"
   publish = ".output/public"
 
 [build.environment]
   NODE_VERSION = "20"
+
+[context.production.override]
+  NODE_OPTIONS = "--max-old-space-size=4096"
