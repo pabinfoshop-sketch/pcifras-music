@@ -1,0 +1,11 @@
+{
+  "name": "pcifras-music",
+  "compatibility_date": "2024-01-01",
+  "pages": {
+    "build_output_dir": "./dist"
+  },
+  // Variáveis de ambiente (não secrets - apenas defaults)
+  "vars": {
+    "NODE_VERSION": "18"
+  }
+}
