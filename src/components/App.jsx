@@ -58,6 +58,28 @@ const SUPPORT_PIX_KEY = 'apoio@pcifrasmusic.com'
 const SUPPORT_PIX_NAME = 'PauloC — PCifrasMusic'
 const SUPPORT_COFFEE_URL = 'https://www.buymeacoffee.com/pcifrasmusic'
 
+// Auto-activate dev/test mode when URL has ?dev=1
+const DEV_MODE = typeof window !== 'undefined'
+  && new URL(window.location.href).searchParams.get('dev') === '1'
+if (DEV_MODE && typeof window !== 'undefined') {
+  try {
+    const raw = localStorage.getItem('cifras_user')
+    if (!raw || raw === 'null') {
+      localStorage.setItem('cifras_user', JSON.stringify({
+        id: 'dev-user-id',
+        email: 'dev@teste.com',
+        name: 'DEV - Modo Teste',
+        premium: true,
+        paidActive: true,
+        trialDays: 7,
+        trialEnd: new Date(Date.now() + 7*86400000).toISOString(),
+      }))
+    }
+  } catch (e) {
+    console.warn('[DevMode]', e)
+  }
+}
+
 export default function App() {
   const [songs, setSongs] = useLocalStorage(STORE_KEY, [])
   const [setlists, setSetlists] = useLocalStorage(SETLISTS_KEY, [])
