@@ -1,0 +1,15 @@
+{
+  // Freebuff/Daytona configuration for pCifras Music
+  "commands": {
+    "install": "bun install",
+    "dev": "bun run dev",
+    "build": "bun run build"
+  },
+  "ports": [
+    {
+      "port": 5173,
+      "onOpen": "openPreview",
+      "name": "pCifras Music Dev Server"
+    }
+  ]
+}
